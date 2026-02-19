@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Surat Keterangan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Times New Roman", serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm 25mm 25mm 25mm;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            line-height: 1.6;
+            font-size: 12pt;
+        }
+        .kop-surat {
+            text-align: center;
+        }
+        .kop-surat h4 {
+            margin: 0;
+        }
+        .kop-surat h3 {
+            margin: 0;
+            font-size: 14pt;
+        }
+        .kop-surat p {
+            margin: 2px 0;
+        }
+        .kop-surat .address {
+            font-size: 9pt;
+        }
+        .kop-surat .contact {
+            font-size: 8pt;
+        }
+        .line-separator {
+            margin-top: 5px;
+        }
+        .line-thin {
+            border: none;
+            border-top: 1px solid black;
+            margin: 0;
+        }
+        .line-thick {
+            border: none;
+            border-top: 3px solid black;
+            margin: 2px 0;
+        }
+        .judul {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .judul h3 {
+            margin: 0;
+            text-decoration: underline;
+        }
+        .isi {
+            margin-top: 20px;
+            text-align: justify;
+        }
+        .data-table {
+            margin-left: 40px;
+        }
+        .data-table td {
+            padding: 0px 5px;
+            vertical-align: top;
+        }
+        .indent {
+            text-indent: 5mm;
+        }
+        .closing {
+            margin-top: 12px;
+            text-align: justify;
+        }
+        .ttd {
+            margin-top: 50px;
+            text-align: right;
+        }
+        .ttd .place-time {
+            margin-right: 0px;
+        }
+        .ttd .position {
+            margin-right: 60px;
+        }
+        .ttd .signer {
+            margin-right: 10px;
+        }
+        .ttd .signer-id {
+            margin-right: 0px;
+        }
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .a4-page {
+                width: 210mm;
+                min-height: 297mm;
+                margin: 0mm 229mm 49mm 229mm;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="a4-page">
+
+<div class="kop-surat">
+    <h4>KEMENTERIAN AGAMA REPUBLIK INDONESIA</h4>
+    <h3>HALAL CENTER</h3>
+    <h4>UIN SUNAN KALIJAGA YOGYAKARTA</h4>
+    <p class="address">Jl. Marsda Adisucipto, Daerah Istimewa Yogyakarta 55281</p>
+    <p class="contact">Email: halalcenter@uin-suka.ac.id | Telp: (0274) 512474 | Website: halalcenter.uin-suka.ac.id</p>
+</div>
+
+<div class="line-separator">
+    <hr class="line-thin">
+    <hr class="line-thick">
+    <hr class="line-thin">
+</div>
+
+<div class="judul">
+    <h4 style="border-bottom: 2px solid black; display: inline-block;">
+    SURAT KETERANGAN </h4>
+    <p>No. K-01/HC-UINSK/III/2023</p>
+</div>
+
+<div class="isi">
+    <p class="indent">
+        Dalam rangka Program Sertifikasi Halal Gratis (SEHATI) Tahun 2023 bagi Pelaku Usaha Mikro Kecil 
+        yang diselenggarakan oleh BPJPH Kemenag RI, maka saya yang bertanda tangan di bawah ini:
+    </p>
+
+    <table class="data-table">
+        <tr>
+            <td>Nama</td>
+            <td>:</td>
+            <td>Dr. Imelda Fajriati, M.Si</td>
+        </tr>
+        <tr>
+            <td>NIP</td>
+            <td>:</td>
+            <td>197507252000032001</td>
+        </tr>
+        <tr>
+            <td>Jabatan</td>
+            <td>:</td>
+            <td>Ketua Lembaga Pendamping PPH / Halal Center UIN Sunan Kalijaga</td>
+        </tr>
+    </table>
+
+    <p>Menerangkan bahwa:</p>
+
+    <table class="data-table">
+        <tr>
+            <td>Nama</td>
+            <td>:</td>
+            <td>Nurhidayah</td>
+        </tr>
+        <tr>
+            <td>No Registrasi</td>
+            <td>:</td>
+            <td>2204001838</td>
+        </tr>
+        <tr>
+            <td>Jabatan</td>
+            <td>:</td>
+            <td>Pendamping PPH UIN Sunan Kalijaga Yogyakarta</td>
+        </tr>
+        <tr>
+            <td>Alamat</td>
+            <td>:</td>
+            <td>Bulugede 01/01 Patebon, Kendal, Jawa Tengah</td>
+        </tr>
+    </table>
+
+    <p>
+        Telah mengundurkan diri mulai tanggal 17 Maret 2023 dari jabatannya sebagai anggota aktif 
+        Pendamping PPH Halal Center UIN Sunan Kalijaga Yogyakarta.
+    </p>
+
+    <div class="closing">
+        <p>Demikian surat ini dibuat agar dapat digunakan sebagaimana mestinya.</p>
+    </div>
+</div>
+
+<div class="ttd">
+    <p class="place-time">Yogyakarta, 17 Maret 2022</p>
+    <p class="position">Ketua,</p>
+    <br><br><br><br>
+    <p class="signer">Dr. Imelda Fajriati, M.Si</p>
+    <p class="signer-id">NIP. 197507252000032001</p>
+</div>
+
+</div>
+</body>
+</html>
