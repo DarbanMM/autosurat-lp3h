@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LetterController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/login');
 });
 
 Route::get('/surat-keterangan-p3h', [LetterController::class, 'suratKeteranganP3H']);
@@ -15,6 +15,26 @@ Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
+
 Route::post('/login', function () {
     return redirect('/');
+});
+
+// Halaman Login
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
+
+// Proses Login
+Route::post('/login', function () {
+    return redirect('/');
+});
+
+// Route logout untuk menangani tombol "Keluar" di sidebar
+Route::post('/logout', function () {
+    // Setelah logout, arahkan kembali ke halaman login
+    return redirect('/login');
 });
