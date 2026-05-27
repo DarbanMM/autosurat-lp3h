@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: autosurat-app
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8000:8000"
+      - "5173:5173"
+    environment:
+      - APP_ENV=local
+    command: bash -c "composer install && npm install && php artisan serve --host=0.0.0.0 --port=8000"
+    stdin_open: true
+    tty: true
