@@ -1,0 +1,18 @@
+What have to be prepared:
+1. PHP 8.0
+2. Composer
+3. PostgreSQL
+
+Page	                URL
+Login	                http://localhost/login
+Dashboard	            http://localhost/dashboard
+
+start apps:
+Windows   =  start-docker.bat
+Mac/Linux =  bash start-docker.sh
+Terminal  =  cd c:\laragon\www\autosurat-lp3h
+             docker-compose up -d
+
+Checking status: docker-compose ps
+
+How to access: http://localhost

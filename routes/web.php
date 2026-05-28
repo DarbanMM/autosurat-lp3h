@@ -19,6 +19,10 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
+Route::get('/daftar-surat', function () {
+    return view('daftar-surat');
+})->name('daftar-surat');
+
 Route::post('/login', function () {
     return redirect('/');
 });

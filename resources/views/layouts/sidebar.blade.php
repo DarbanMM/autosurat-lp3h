@@ -6,24 +6,36 @@
     </div>
 
     <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-        <a href="/" class="flex items-center py-3 px-4 rounded bg-brand-dark text-white font-medium transition duration-200">
+        <a href="/dashboard" class="flex items-center py-3 px-4 rounded {{ Route::is('dashboard') ? 'bg-brand-dark text-white font-medium' : 'text-gray-200 hover:text-white hover:bg-brand-dark' }} transition duration-200">
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
             Dashboard
         </a>
-        
-        <p class="px-4 pt-4 pb-2 text-xs font-semibold text-gray-300 uppercase tracking-wider">Modul Surat</p>
-        
-        <a href="/surat-pengantar" class="flex items-center py-2.5 px-4 rounded transition duration-200 hover:bg-brand-dark text-gray-200 hover:text-white">
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            Surat Pengantar
+
+        <div class="h-2"></div>
+
+        <a href="/daftar-surat" class="flex items-center py-2.5 px-4 rounded transition duration-200 {{ Route::is('daftar-surat') ? 'bg-brand-dark text-white font-medium' : 'text-gray-200 hover:text-white hover:bg-brand-dark' }}">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            Daftar Surat
         </a>
-        <a href="/surat-tugas" class="flex items-center py-2.5 px-4 rounded transition duration-200 hover:bg-brand-dark text-gray-200 hover:text-white">
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-            Surat Tugas
+
+        <a href="/format-nomor-surat" class="flex items-center py-2.5 px-4 rounded transition duration-200 hover:bg-brand-dark text-gray-200 hover:text-white">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path></svg>
+            Format Nomor Surat
         </a>
-        <a href="/surat-keterangan-p3h" class="flex items-center py-2.5 px-4 rounded transition duration-200 hover:bg-brand-dark text-gray-200 hover:text-white">
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            SK P3H
+
+        <a href="/riwayat-surat" class="flex items-center py-2.5 px-4 rounded transition duration-200 hover:bg-brand-dark text-gray-200 hover:text-white">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            Riwayat Surat Keluar
+        </a>
+
+        <a href="/user" class="flex items-center py-2.5 px-4 rounded transition duration-200 hover:bg-brand-dark text-gray-200 hover:text-white">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            User
+        </a>
+
+        <a href="/kepala-lp3h" class="flex items-center py-2.5 px-4 rounded transition duration-200 hover:bg-brand-dark text-gray-200 hover:text-white">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path></svg>
+            Kepala LP3H
         </a>
     </nav>
 
