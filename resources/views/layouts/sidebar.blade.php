@@ -18,7 +18,7 @@
             Daftar Surat
         </a>
 
-        <a href="/format-nomor-surat" class="flex items-center py-2.5 px-4 rounded transition duration-200 hover:bg-brand-dark text-gray-200 hover:text-white">
+        <a href="/format-nomor-surat" class="flex items-center py-2.5 px-4 rounded transition duration-200 {{ Route::is('format-nomor-surat') ? 'bg-brand-dark text-white font-medium' : 'text-gray-200 hover:text-white hover:bg-brand-dark' }}">
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path></svg>
             Format Nomor Surat
         </a>

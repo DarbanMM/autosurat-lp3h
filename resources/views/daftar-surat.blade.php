@@ -6,7 +6,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
         <div>
             <h2 class="text-2xl font-bold text-brand">Daftar Surat</h2>
-            <p class="text-sm text-gray-500 mt-1">Kelola daftar templat surat dan format penomorannya.</p>
+            <p class="text-sm text-gray-500 mt-1">Kelola daftar templat surat, format penomoran, beserta deskripsi penggunaannya.</p>
         </div>
         
         <button onclick="openModal('add')" class="bg-brand hover:bg-brand-dark text-white font-semibold py-2.5 px-5 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm focus:ring-4 focus:ring-purple-200">
@@ -23,8 +23,9 @@
                 <thead class="text-xs text-gray-700 uppercase bg-gray-100 border-b border-gray-200">
                     <tr>
                         <th scope="col" class="px-6 py-4 w-16 text-center font-bold">No</th>
-                        <th scope="col" class="px-6 py-4 font-bold">Nama Surat</th>
+                        <th scope="col" class="px-6 py-4 font-bold w-1/4">Nama Surat</th>
                         <th scope="col" class="px-6 py-4 font-bold">Nomor Surat</th>
+                        <th scope="col" class="px-6 py-4 font-bold w-1/3">Keterangan</th>
                         <th scope="col" class="px-6 py-4 w-40 text-center font-bold">Aksi</th>
                     </tr>
                 </thead>
@@ -33,13 +34,16 @@
                         <td class="px-6 py-4 text-center font-medium text-gray-900">1</td>
                         <td class="px-6 py-4 font-semibold text-gray-800">Surat Pengantar Kegiatan P3H</td>
                         <td class="px-6 py-4">
-                            <span class="bg-purple-100 text-brand text-xs font-semibold px-3 py-1.5 rounded-md border border-purple-200">
+                            <span class="bg-purple-100 text-brand text-xs font-semibold px-3 py-1.5 rounded-md border border-purple-200 whitespace-nowrap">
                                 001/LP3H/SU/2026
                             </span>
                         </td>
+                        <td class="px-6 py-4 text-gray-700 leading-relaxed">
+                            Digunakan sebagai surat pengantar resmi ke instansi atau lembaga luar terkait pelaksanaan program/kegiatan LP3H.
+                        </td>
                         <td class="px-6 py-4 text-center">
                             <div class="flex items-center justify-center gap-2">
-                                <button onclick="openModal('edit', 1, 'Surat Pengantar Kegiatan P3H', '001/LP3H/SU/2026')" class="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 focus:ring-2 focus:ring-blue-300 transition-all">
+                                <button onclick="openModal('edit', 1, 'Surat Pengantar Kegiatan P3H', '001/LP3H/SU/2026', 'Digunakan sebagai surat pengantar resmi ke instansi atau lembaga luar terkait pelaksanaan program/kegiatan LP3H.')" class="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 focus:ring-2 focus:ring-blue-300 transition-all">
                                     Edit
                                 </button>
                                 <button class="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium text-red-700 bg-red-100 rounded-lg hover:bg-red-200 focus:ring-2 focus:ring-red-300 transition-all">
@@ -53,13 +57,16 @@
                         <td class="px-6 py-4 text-center font-medium text-gray-900">2</td>
                         <td class="px-6 py-4 font-semibold text-gray-800">Surat Tugas Pendampingan Lapangan</td>
                         <td class="px-6 py-4">
-                            <span class="bg-purple-100 text-brand text-xs font-semibold px-3 py-1.5 rounded-md border border-purple-200">
+                            <span class="bg-purple-100 text-brand text-xs font-semibold px-3 py-1.5 rounded-md border border-purple-200 whitespace-nowrap">
                                 002/LP3H/ST/2026
                             </span>
                         </td>
+                        <td class="px-6 py-4 text-gray-700 leading-relaxed">
+                            Diberikan kepada personil pendamping proses produk halal (P3H) sebelum turun langsung melakukan verifikasi lapangan.
+                        </td>
                         <td class="px-6 py-4 text-center">
                             <div class="flex items-center justify-center gap-2">
-                                <button onclick="openModal('edit', 2, 'Surat Tugas Pendampingan Lapangan', '002/LP3H/ST/2026')" class="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 focus:ring-2 focus:ring-blue-300 transition-all">
+                                <button onclick="openModal('edit', 2, 'Surat Tugas Pendampingan Lapangan', '002/LP3H/ST/2026', 'Diberikan kepada personil pendamping proses produk halal (P3H) sebelum turun langsung melakukan verifikasi lapangan.')" class="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 focus:ring-2 focus:ring-blue-300 transition-all">
                                     Edit
                                 </button>
                                 <button class="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium text-red-700 bg-red-100 rounded-lg hover:bg-red-200 focus:ring-2 focus:ring-red-300 transition-all">
@@ -90,13 +97,13 @@
                 @csrf
                 <input type="hidden" id="letter_id" name="id">
                 
-                <div class="p-6 space-y-6 overflow-y-auto flex-1 max-h-[60vh]">
+                <div class="p-6 space-y-5 overflow-y-auto flex-1 max-h-[58vh]">
                     
                     <div>
                         <label for="nama_surat" class="block mb-2 text-sm font-semibold text-gray-900">Nama Surat</label>
                         <input type="text" id="nama_surat" name="nama_surat" required 
                             class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-brand block w-full p-3 outline-none transition-all" 
-                            placeholder="Contoh: Surat Tugas Pendampingan">
+                            placeholder="Contoh: Surat Keterangan Pendampingan">
                     </div>
                     
                     <div>
@@ -113,6 +120,13 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             </div>
                         </div>
+                    </div>
+
+                    <div>
+                        <label for="keterangan" class="block mb-2 text-sm font-semibold text-gray-900">Keterangan Surat</label>
+                        <textarea id="keterangan" name="keterangan" rows="4" required 
+                            class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-brand block w-full p-3 outline-none transition-all resize-y" 
+                            placeholder="Tuliskan penjelasan mengenai fungsi surat ini atau kapan surat ini digunakan..."></textarea>
                     </div>
 
                 </div>
@@ -132,7 +146,7 @@
     </div>
 
     <script>
-        function openModal(mode, id = '', nama = '', nomor = '') {
+        function openModal(mode, id = '', nama = '', nomor = '', keterangan = '') {
             const modal = document.getElementById('letterModal');
             const title = document.getElementById('modalTitle');
             const form = document.getElementById('formSurat');
@@ -140,6 +154,7 @@
             const inputId = document.getElementById('letter_id');
             const inputNama = document.getElementById('nama_surat');
             const inputNomor = document.getElementById('nomor_surat');
+            const inputKeterangan = document.getElementById('keterangan');
             
             if (mode === 'add') {
                 title.innerText = 'Surat Baru';
@@ -150,6 +165,7 @@
                 inputId.value = id;
                 inputNama.value = nama;
                 inputNomor.value = nomor;
+                inputKeterangan.value = keterangan; // Mengisi value keterangan ke textarea saat Edit
             }
             
             // Hapus class hidden dan paksa class flex agar modal muncul di tengah

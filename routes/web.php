@@ -23,6 +23,10 @@ Route::get('/daftar-surat', function () {
     return view('daftar-surat');
 })->name('daftar-surat');
 
+Route::get('/format-nomor-surat', function () {
+    return view('format-nomor-surat');
+})->name('format-nomor-surat');
+
 Route::post('/login', function () {
     return redirect('/');
 });
