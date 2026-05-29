@@ -35,6 +35,10 @@ Route::get('/pendamping', function () {
     return view('pendamping');
 })->name('pendamping');
 
+Route::get('/user', function () {
+    return view('user');
+})->name('user');
+
 Route::post('/login', function () {
     return redirect('/');
 });
