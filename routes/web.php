@@ -27,6 +27,10 @@ Route::get('/format-nomor-surat', function () {
     return view('format-nomor-surat');
 })->name('format-nomor-surat');
 
+Route::get('/riwayat-surat', function () {
+    return view('riwayat-surat');
+})->name('riwayat-surat');
+
 Route::post('/login', function () {
     return redirect('/');
 });
