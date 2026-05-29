@@ -31,6 +31,10 @@ Route::get('/riwayat-surat', function () {
     return view('riwayat-surat');
 })->name('riwayat-surat');
 
+Route::get('/pendamping', function () {
+    return view('pendamping');
+})->name('pendamping');
+
 Route::post('/login', function () {
     return redirect('/');
 });
