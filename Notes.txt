@@ -3,16 +3,22 @@ What have to be prepared:
 2. Composer
 3. PostgreSQL
 
-Page	                URL
-Login	                http://localhost/login
-Dashboard	            http://localhost/dashboard
-
 start apps:
 Windows   =  start-docker.bat
 Mac/Linux =  bash start-docker.sh
 Terminal  =  cd c:\laragon\www\autosurat-lp3h
              docker-compose up -d
 
-Checking status: docker-compose ps
+Checking status for docker: docker-compose ps
 
-How to access: http://localhost
+How to access for local: http://localhost
+
+Admins Page	            URL
+Login	                http://localhost/login
+Dashboard               http://localhost/dashboard
+Daftar Surat	        http://localhost/daftar-surat
+Format Nomor Surat	    http://localhost/format-nomor-surat
+Riwayat Surat Keluar    http://localhost/riwayat-surat
+Pendamping	            http://localhost/pendamping
+User	                http://localhost/user
+Kepala LP3H	            http://localhost/kepala-lp3h

@@ -16,32 +16,40 @@ Route::get('/login', function () {
 })->name('login');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('admin.dashboard');
 })->name('dashboard');
 
 Route::get('/daftar-surat', function () {
-    return view('daftar-surat');
+    return view('admin.daftar-surat');
 })->name('daftar-surat');
 
 Route::get('/format-nomor-surat', function () {
-    return view('format-nomor-surat');
+    return view('admin.format-nomor-surat');
 })->name('format-nomor-surat');
 
 Route::get('/riwayat-surat', function () {
-    return view('riwayat-surat');
+    return view('admin.riwayat-surat');
 })->name('riwayat-surat');
 
 Route::get('/pendamping', function () {
-    return view('pendamping');
+    return view('admin.pendamping');
 })->name('pendamping');
 
 Route::get('/user', function () {
-    return view('user');
+    return view('admin.user');
 })->name('user');
 
 Route::get('/kepala-lp3h', function () {
-    return view('kepala-lp3h');
+    return view('admin.kepala-lp3h');
 })->name('kepala-lp3h');
+
+Route::get('/profil', function () {
+    return view('user.profil');
+})->name('profil');
+
+Route::get('/buat-surat', function () {
+    return view('user.buat-surat');
+})->name('buat-surat');
 
 Route::post('/login', function () {
     return redirect('/');

@@ -42,6 +42,16 @@
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path></svg>
             Kepala LP3H
         </a>
+
+        <a href="/profil" class="flex items-center py-2.5 px-4 rounded transition duration-200 {{ Route::is('profil') ? 'bg-brand-dark text-white font-medium' : 'text-gray-200 hover:text-white hover:bg-brand-dark' }}">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            Profil
+        </a>
+
+        <a href="/buat-surat" class="flex items-center py-2.5 px-4 rounded transition duration-200 {{ Route::is('buat-surat') ? 'bg-brand-dark text-white font-medium' : 'text-gray-200 hover:text-white hover:bg-brand-dark' }}">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            Buat Surat
+        </a>
     </nav>
 
     <div class="border-t border-brand-dark p-4">
