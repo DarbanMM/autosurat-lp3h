@@ -39,6 +39,10 @@ Route::get('/user', function () {
     return view('user');
 })->name('user');
 
+Route::get('/kepala-lp3h', function () {
+    return view('kepala-lp3h');
+})->name('kepala-lp3h');
+
 Route::post('/login', function () {
     return redirect('/');
 });
