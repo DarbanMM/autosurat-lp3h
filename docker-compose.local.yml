@@ -10,17 +10,17 @@ services:
     working_dir: /app
     environment:
       APP_NAME: "AutoSurat"
-      APP_ENV: production
-      APP_DEBUG: "false"
+      APP_ENV: local
+      APP_DEBUG: "true"
       APP_URL: http://localhost
       APP_KEY: ${APP_KEY:-}
 
       DB_CONNECTION: pgsql
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT:-5432}
-      DB_DATABASE: ${DB_DATABASE}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-autosurat}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
 
       SESSION_DRIVER: database
       CACHE_STORE: database
@@ -33,13 +33,31 @@ services:
       - ./:/app
       - /app/vendor
       - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - autosurat_network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: autosurat_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-autosurat}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     healthcheck:
-      test: ["CMD", "php", "-v"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - autosurat_network
 
   nginx:
     image: nginx:alpine
@@ -70,7 +88,9 @@ services:
     networks:
       - autosurat_network
 
+volumes:
+  postgres_data:
+
 networks:
   autosurat_network:
     driver: bridge
-

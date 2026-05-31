@@ -4,10 +4,16 @@ What have to be prepared:
 3. PostgreSQL
 
 start apps:
-Windows   =  start-docker.bat
-Mac/Linux =  bash start-docker.sh
-Terminal  =  cd c:\laragon\www\autosurat-lp3h
-             docker-compose up -d
+Windows - Switch to LOCAL       = switch-db.bat local
+                                  docker-compose up -d
+Windows - Switch to SUPABASE    = switch-db.bat supabase
+                                  docker-compose up -d
+Mac/Linux - Switch to LOCAL     = ./switch-db.sh local
+                                  docker-compose up -d
+Mac/Linux - Switch to SUPABASE  = ./switch-db.sh supabase
+                                  docker-compose up -d
+
+after that, run "npm run dev" for UI
 
 Checking status for docker: docker-compose ps
 

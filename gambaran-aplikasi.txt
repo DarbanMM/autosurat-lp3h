@@ -21,7 +21,7 @@ Dari latar belakang dan hasil wawancara kepada orang yang mengurusi LP3H, aku me
 Konsep aplikasi
 Aku akan membagi pengguna menjadi 2, yaitu admin dan user. Ketika pertamakali membuka aplikasi, admin dan pengguna akan dihadapkan dengan tampilan login. Mereka harus mengisikan username dan password untuk bisa masuk ke halaman utama masing masing.
     1.	Ketika masuk sebagai User, pertama kali yang akan diperlihatkan adalah halaman Profil. Susunan dari halaman User adalah:
-        a.	Dalam satu halaman akan dibagi menjadi dua, yaitu sidebar kiri dan halaman isi content. Pada sidebar sebelah atas akan ada Logo uin sunan kalijaga dan disebelahnya ada tulisan LP3H. Dibawah keduanya adalah shortcut untuk ke halaman Profil. Dibawahnya Profil ada shortcut Buat Surat. DIbawahnya Buat Surat adalah list dari surat yang bisa dibuat dalam sistem, khusus bagian ini bisa di scroll ke atas bawah tanpa mempengaruhi posisi sidebar dan komponen dari sidebar lainnya. Dibawahnya list surat ada shortcut logout.
+        a.	Dalam satu halaman akan dibagi menjadi dua, yaitu sidebar kiri dan halaman isi content. Pada sidebar sebelah atas akan ada Logo uin sunan kalijaga dan disebelahnya ada tulisan LP3H. Dibawah keduanya adalah shortcut untuk ke halaman Profil. Dibawahnya Profil ada shortcut Buat Surat. Dibawahnya buat surat ada shortcut logout.
         b.	Ketika user sudah login, halaman yang pertama akan dimunculkan adalah halaman profil. Pada halaman profil, bagian isi content akan ditampilkan ucapan selamat datang di autosurat LP3H, lalu dibawahnya ada data diri dengan rincian dan contoh sebagai berikut;
             1.	Nama: Agus Susanto
             2.	Nomor Register: 2209000871
