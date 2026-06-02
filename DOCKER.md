@@ -117,6 +117,16 @@ Wait 10-15 seconds after starting Docker for PostgreSQL to be ready.
 docker-compose logs postgres
 ```
 
+### Import CSV Failed (HTTP 413)
+Nginx defaults to a **1 MB** upload limit. Large pendamping CSV files need a rebuild:
+
+```bash
+docker-compose down
+docker-compose up --build -d
+```
+
+Upload limits are set to **64 MB** in `nginx.conf` and `docker/php/uploads.ini`.
+
 ### Port Already in Use
 Change ports in `docker-compose.yml`:
 ```yaml

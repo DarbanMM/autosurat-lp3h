@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 class Pendamping extends Model
@@ -41,9 +42,28 @@ class Pendamping extends Model
     ];
 
     protected $casts = [
-        'pns' => 'boolean',
         'tgl_berlaku' => 'date',
         'tgl_lahir' => 'date',
         'jumlah_pu' => 'integer',
     ];
+
+    protected function pns(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => (bool) $value,
+            set: function ($value) {
+                if (is_bool($value)) {
+                    return $value;
+                }
+                if ($value === null || $value === '') {
+                    return false;
+                }
+                if (is_numeric($value)) {
+                    return ((int) $value) === 1;
+                }
+
+                return in_array(strtolower(trim((string) $value)), ['1', 'true', 'yes', 'y', 'on'], true);
+            }
+        );
+    }
 }

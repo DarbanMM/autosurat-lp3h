@@ -72,6 +72,7 @@ Route::post('/logout', function () {
     return redirect('/login');
 });
 
-// Pendamping Import & Download
+// Pendamping API
+Route::get('/pendamping/data', [PendampingController::class, 'index'])->name('pendamping.data');
 Route::post('/pendamping/import', [PendampingController::class, 'import'])->name('pendamping.import');
 Route::get('/pendamping/download-template/{format}', [PendampingController::class, 'downloadTemplate'])->name('pendamping.download-template');

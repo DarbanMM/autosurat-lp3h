@@ -5,7 +5,7 @@
 @section('content')
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <div x-data="pendampingManager()">
+    <div x-data="pendampingManager()" x-init="init()">
         
         <div class="flex flex-col xl:flex-row xl:items-center justify-between mb-6 gap-4">
             <div>
@@ -60,6 +60,12 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
+                        <tr x-show="listLoading">
+                            <td colspan="4" class="px-6 py-8 text-center text-gray-500">Memuat data...</td>
+                        </tr>
+                        <tr x-show="!listLoading && filteredPendampingList.length === 0">
+                            <td colspan="4" class="px-6 py-8 text-center text-gray-500">Belum ada data pendamping. Import CSV atau tambah data baru.</td>
+                        </tr>
                         <template x-for="(item, index) in filteredPendampingList" :key="item.no_registrasi">
                             <tr class="hover:bg-gray-50 transition-colors bg-white">
                                 <td class="px-6 py-4 text-center font-medium text-gray-900" x-text="index + 1"></td>
@@ -213,7 +219,7 @@
                         <div class="bg-gray-800 text-green-400 font-mono text-xs p-4 rounded-lg leading-relaxed flex flex-wrap gap-2 shadow-inner">
                             <span>id_pendamping,</span><span>id_lembaga,</span><span>no_pendaftaran,</span><span>no_registrasi,</span><span>tgl_berlaku,</span><span>nama,</span><span>alamat,</span><span>kode_pos,</span><span>kecamatan,</span><span>kabupaten,</span><span>provinsi,</span><span>no_hp,</span><span>tempat_lahir,</span><span>tgl_lahir,</span><span>nik,</span><span>pendidikan,</span><span>universitas,</span><span>status,</span><span>nama_lembaga,</span><span>sumber_data,</span><span>jumlah_pu,</span><span>pekerjaan,</span><span>pekerjaan_lain,</span><span>asal_unit_kerja,</span><span>pns,</span><span>pns_golongan</span>
                         </div>
-                        <p class="text-xs text-gray-500 mt-2">Pastikan baris pertama (Header) di Excel/CSV Anda sama persis dengan urutan nama di atas. Kolom PNS: gunakan 1/0, true/false, yes/no. Tanggal: gunakan format d/m/Y atau Y-m-d. File besar (>3000 baris) mungkin memerlukan waktu loading lebih lama.</p>
+                        <p class="text-xs text-gray-500 mt-2">Header boleh berurutan bebas, tetapi nama kolom harus sama (gunakan underscore, mis. <code class="bg-gray-200 px-1 rounded">no_registrasi</code>). CSV dari Excel Indonesia biasanya memakai pemisah <strong>;</strong> — sudah didukung otomatis. Kolom wajib terisi: <strong>no_registrasi</strong> dan <strong>id_pendamping</strong>. Tanggal: d/m/Y atau Y-m-d. File besar (3500+ baris) dapat memakan waktu beberapa menit — jangan tutup halaman.</p>
                     </div>
 
                     <div class="flex gap-3">
@@ -290,8 +296,8 @@
                 importFile: null,
                 importDragover: false,
                 importLoading: false,
+                listLoading: false,
 
-                // Dummy Data (Backend akan mengganti ini dengan hasil fetch DB diurutkan berdasarkan No Registrasi)
                 pendampingList: [],
 
                 // Schema Data Form Kosong
@@ -316,6 +322,7 @@
 
                 init() {
                     this.formData = { ...this.emptyForm };
+                    this.loadPendampingData();
                 },
 
                 openModal(type, mode = 'add', data = null) {
@@ -357,27 +364,50 @@
                     this.importLoading = true;
                     const formData = new FormData();
                     formData.append('file', this.importFile);
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+                    if (csrfToken) {
+                        formData.append('_token', csrfToken);
+                    }
 
                     try {
                         const response = await fetch('{{ route('pendamping.import') }}', {
                             method: 'POST',
                             headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': csrfToken,
                             },
                             body: formData
                         });
 
+                        const contentType = response.headers.get('content-type') || '';
+                        if (!contentType.includes('application/json')) {
+                            if (response.status === 413) {
+                                throw new Error('File terlalu besar untuk server (HTTP 413). Restart Docker setelah update, atau bagi file menjadi beberapa bagian (<3000 baris per file).');
+                            }
+                            throw new Error(`Server mengembalikan respons non-JSON (HTTP ${response.status}). Periksa log Laravel.`);
+                        }
+
                         const result = await response.json();
 
-                        if (result.success) {
-                            alert(result.message);
+                        if (!response.ok) {
+                            const validationMsg = result.errors?.file?.[0] || result.message;
+                            alert('Error: ' + (validationMsg || 'Import gagal'));
+                            return;
+                        }
+
+                        const detail = (result.errors && result.errors.length)
+                            ? '\n\nDetail:\n' + result.errors.join('\n')
+                            : '';
+
+                        if (result.success && result.imported > 0) {
+                            alert(result.message + (result.skipped > 0 ? detail : ''));
                             this.closeModal();
-                            // Reload data dari backend
                             this.loadPendampingData();
                         } else {
-                            alert('Error: ' + result.message);
-                            if (result.errors && result.errors.length > 0) {
-                                console.error('Errors:', result.errors);
+                            alert((result.message || 'Import gagal.') + detail);
+                            if (result.errors?.length) {
+                                console.error('Import errors:', result.errors);
                             }
                         }
                     } catch (error) {
@@ -388,9 +418,34 @@
                 },
 
                 async loadPendampingData() {
-                    // TODO: Implement fetch data from backend
-                    // Untuk sekarang, gunakan dummy data
-                    console.log('Load pendamping data dari backend');
+                    this.listLoading = true;
+
+                    try {
+                        const params = new URLSearchParams();
+                        if (this.searchQuery.trim()) {
+                            params.set('search', this.searchQuery.trim());
+                        }
+
+                        const url = '{{ route('pendamping.data') }}' + (params.toString() ? `?${params}` : '');
+                        const response = await fetch(url, {
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Gagal memuat data pendamping.');
+                        }
+
+                        const result = await response.json();
+                        this.pendampingList = result.data || [];
+                    } catch (error) {
+                        console.error(error);
+                        alert('Gagal memuat daftar pendamping: ' + error.message);
+                    } finally {
+                        this.listLoading = false;
+                    }
                 },
 
                 submitForm() {

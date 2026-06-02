@@ -70,12 +70,13 @@ docker-compose up -d
 - **Password**: password
 - **Database**: autosurat
 
-### Supabase Setup
-- **Host**: db.mljztpiomzshxngezgum.supabase.co
-- **Port**: 5432
-- **Username**: postgres
-- **Password**: dbautosurat
+### Supabase Setup (transaction pooler)
+- **Host**: aws-1-ap-southeast-2.pooler.supabase.com
+- **Port**: 6543
+- **Username**: postgres.mljztpiomzshxngezgum
 - **Database**: postgres
+- **Pooler mode**: Transaction (required for Laravel migrations with PgBouncer)
+- Set `DB_EMULATE_PREPARES=true` and `DB_SSLMODE=require` in `.env.supabase`
 
 ---
 

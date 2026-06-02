@@ -27,6 +27,8 @@ RUN composer install --optimize-autoloader && \
     mkdir -p storage/logs bootstrap/cache && \
     chmod -R 775 storage bootstrap/cache
 
+COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 

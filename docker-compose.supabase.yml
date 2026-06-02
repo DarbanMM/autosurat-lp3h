@@ -17,10 +17,13 @@ services:
 
       DB_CONNECTION: pgsql
       DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT:-5432}
+      DB_PORT: ${DB_PORT:-6543}
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
+      DB_URL: ${DB_URL:-}
+      DB_SSLMODE: ${DB_SSLMODE:-require}
+      DB_EMULATE_PREPARES: ${DB_EMULATE_PREPARES:-true}
 
       SESSION_DRIVER: database
       CACHE_STORE: database
