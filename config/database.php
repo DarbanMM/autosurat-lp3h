@@ -95,7 +95,6 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'sslmode' => env('DB_SSLMODE', 'prefer'),
-            'prepared_statements' => false,
         ],
 
         'sqlsrv' => [
