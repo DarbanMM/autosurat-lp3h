@@ -12,9 +12,9 @@
                 <h2 class="text-2xl font-bold text-brand">Daftar Pendamping</h2>
                 <p class="text-sm text-gray-500 mt-1">Kelola data pendamping proses produk halal (P3H).</p>
             </div>
-            
-            <div class="flex flex-wrap items-center gap-2">
-                
+
+            <div class="flex flex-col sm:flex-row flex-wrap items-center gap-2">
+
                 <button @click="openModal('import')" class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-2.5 px-4 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2 text-sm">
                     <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                     Import Pendamping
@@ -42,6 +42,9 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     Tambah Pendamping
                 </button>
+
+                <input type="text" @keyup="searchQuery = $event.target.value" placeholder="Cari nama atau no registrasi..." class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand focus:border-transparent shadow-sm transition-all" />
+
             </div>
         </div>
 
@@ -57,7 +60,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                        <template x-for="(item, index) in pendampingList" :key="item.no_registrasi">
+                        <template x-for="(item, index) in filteredPendampingList" :key="item.no_registrasi">
                             <tr class="hover:bg-gray-50 transition-colors bg-white">
                                 <td class="px-6 py-4 text-center font-medium text-gray-900" x-text="index + 1"></td>
                                 <td class="px-6 py-4 font-mono font-semibold text-brand" x-text="item.no_registrasi"></td>
@@ -208,26 +211,26 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Format / Template Nama Kolom yang Wajib Digunakan:</label>
                         <div class="bg-gray-800 text-green-400 font-mono text-xs p-4 rounded-lg leading-relaxed flex flex-wrap gap-2 shadow-inner">
-                            <span>no_registrasi,</span><span>id_pendamping,</span><span>id_lembaga,</span><span>no_pendaftaran,</span><span>tgl_berlaku,</span><span>nama,</span><span>alamat,</span><span>kode_pos,</span><span>kecamatan,</span><span>kabupaten,</span><span>provinsi,</span><span>no_hp,</span><span>tempat_lahir,</span><span>tgl_lahir,</span><span>nik,</span><span>pendidikan,</span><span>universitas,</span><span>status,</span><span>nama_lembaga,</span><span>sumber_data,</span><span>jumlah_pu,</span><span>pekerjaan,</span><span>pekerjaan_lain,</span><span>asal_unit_kerja,</span><span>pns,</span><span>pns_golongan</span>
+                            <span>id_pendamping,</span><span>id_lembaga,</span><span>no_pendaftaran,</span><span>no_registrasi,</span><span>tgl_berlaku,</span><span>nama,</span><span>alamat,</span><span>kode_pos,</span><span>kecamatan,</span><span>kabupaten,</span><span>provinsi,</span><span>no_hp,</span><span>tempat_lahir,</span><span>tgl_lahir,</span><span>nik,</span><span>pendidikan,</span><span>universitas,</span><span>status,</span><span>nama_lembaga,</span><span>sumber_data,</span><span>jumlah_pu,</span><span>pekerjaan,</span><span>pekerjaan_lain,</span><span>asal_unit_kerja,</span><span>pns,</span><span>pns_golongan</span>
                         </div>
-                        <p class="text-xs text-gray-500 mt-2">Pastikan baris pertama (Header) di Excel/CSV Anda sama persis dengan urutan nama di atas.</p>
+                        <p class="text-xs text-gray-500 mt-2">Pastikan baris pertama (Header) di Excel/CSV Anda sama persis dengan urutan nama di atas. Kolom PNS: gunakan 1/0, true/false, yes/no. Tanggal: gunakan format d/m/Y atau Y-m-d. File besar (>3000 baris) mungkin memerlukan waktu loading lebih lama.</p>
                     </div>
 
                     <div class="flex gap-3">
-                        <button class="flex items-center gap-2 text-sm bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 px-4 py-2 rounded-lg font-medium transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Download Template Excel
-                        </button>
-                        <button class="flex items-center gap-2 text-sm bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200 px-4 py-2 rounded-lg font-medium transition-colors">
+                        <a href="{{ route('pendamping.download-template', 'csv') }}" class="flex items-center gap-2 text-sm bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 px-4 py-2 rounded-lg font-medium transition-colors">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                             Download Template CSV
-                        </button>
+                        </a>
+                        <a href="{{ route('pendamping.download-template', 'xlsx') }}" class="flex items-center gap-2 text-sm bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200 px-4 py-2 rounded-lg font-medium transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Download Template Excel
+                        </a>
                     </div>
 
-                    <div class="border-2 border-dashed border-gray-300 bg-gray-50 rounded-xl p-8 text-center hover:bg-gray-100 hover:border-brand transition-colors cursor-pointer relative">
-                        <input type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".xlsx, .csv">
+                    <div class="border-2 border-dashed border-gray-300 bg-gray-50 rounded-xl p-8 text-center hover:bg-gray-100 hover:border-brand transition-colors cursor-pointer relative" @dragover.prevent="importDragover = true" @dragleave.prevent="importDragover = false" @drop.prevent="handleFileDrop">
+                        <input type="file" @change="handleFileSelect" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".xlsx, .csv, .xls" x-ref="importFileInput">
                         <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                        <p class="text-sm font-semibold text-gray-700">Klik di sini untuk mengunggah file</p>
+                        <p class="text-sm font-semibold text-gray-700" x-text="importFile ? importFile.name : 'Klik di sini untuk mengunggah file'"></p>
                         <p class="text-xs text-gray-500 mt-1">atau drag & drop file Excel/CSV ke area ini.</p>
                     </div>
                 </div>
@@ -236,8 +239,7 @@
                     <button @click="closeModal()" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
                         Batalkan
                     </button>
-                    <button class="px-5 py-2.5 text-sm font-medium text-white bg-brand rounded-lg hover:bg-brand-dark shadow-sm transition-colors">
-                        Import
+                    <button @click="submitImport" :disabled="!importFile || importLoading" :class="{'opacity-50 cursor-not-allowed': !importFile || importLoading}" class="px-5 py-2.5 text-sm font-medium text-white bg-brand rounded-lg hover:bg-brand-dark shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2" x-text="importLoading ? 'Sedang Import...' : 'Import'">
                     </button>
                 </div>
             </div>
@@ -282,21 +284,35 @@
                 exportDropdown: false,
                 activeModal: '', // '', 'form', 'import', 'detail'
                 formMode: 'add', // 'add', 'edit'
+                searchQuery: '',
+
+                // Import Related
+                importFile: null,
+                importDragover: false,
+                importLoading: false,
 
                 // Dummy Data (Backend akan mengganti ini dengan hasil fetch DB diurutkan berdasarkan No Registrasi)
-                pendampingList: [
-                    { no_registrasi: '10001', id_pendamping: 'P01', id_lembaga: 'L01', no_pendaftaran: 'REG-001', tgl_berlaku: '2026-12-31', nama: 'Ahmad Santoso', alamat: 'Jl. Merdeka 10', kode_pos: '50123', kecamatan: 'Semarang Barat', kabupaten: 'Semarang', provinsi: 'Jawa Tengah', no_hp: '0812345678', tempat_lahir: 'Semarang', tgl_lahir: '1990-01-01', nik: '33740001', pendidikan: 'S1', universitas: 'Undip', status: 'Aktif', nama_lembaga: 'LP3H Pusat', sumber_data: 'Manual', jumlah_pu: 10, pekerjaan: 'Guru', pekerjaan_lain: '-', asal_unit_kerja: 'SMA 1', pns: true, pns_golongan: 'III/a' },
-                    { no_registrasi: '10002', id_pendamping: 'P02', id_lembaga: 'L01', no_pendaftaran: 'REG-002', tgl_berlaku: '2026-12-31', nama: 'Budi Raharjo', alamat: 'Jl. Pahlawan', kode_pos: '50124', kecamatan: 'Semarang Selatan', kabupaten: 'Semarang', provinsi: 'Jawa Tengah', no_hp: '0819876543', tempat_lahir: 'Kendal', tgl_lahir: '1992-05-15', nik: '33740002', pendidikan: 'S1', universitas: 'Unnes', status: 'Aktif', nama_lembaga: 'LP3H Pusat', sumber_data: 'Manual', jumlah_pu: 5, pekerjaan: 'Swasta', pekerjaan_lain: 'Pedagang', asal_unit_kerja: 'PT Mandiri', pns: false, pns_golongan: '' },
-                    { no_registrasi: '10003', id_pendamping: 'P03', id_lembaga: 'L02', no_pendaftaran: 'REG-003', tgl_berlaku: '2026-12-31', nama: 'Citra Kirana', alamat: 'Jl. Sudirman', kode_pos: '50125', kecamatan: 'Banyumanik', kabupaten: 'Semarang', provinsi: 'Jawa Tengah', no_hp: '0856789012', tempat_lahir: 'Demak', tgl_lahir: '1995-10-20', nik: '33740003', pendidikan: 'S2', universitas: 'UGM', status: 'Aktif', nama_lembaga: 'LP3H Cabang', sumber_data: 'Import', jumlah_pu: 15, pekerjaan: 'Dosen', pekerjaan_lain: '-', asal_unit_kerja: 'Polines', pns: true, pns_golongan: 'III/b' }
-                ],
+                pendampingList: [],
 
                 // Schema Data Form Kosong
                 emptyForm: {
                     no_registrasi: '', id_pendamping: '', id_lembaga: '', no_pendaftaran: '', tgl_berlaku: '', nama: '', alamat: '', kode_pos: '', kecamatan: '', kabupaten: '', provinsi: '', no_hp: '', tempat_lahir: '', tgl_lahir: '', nik: '', pendidikan: '', universitas: '', status: '', nama_lembaga: '', sumber_data: '', jumlah_pu: '', pekerjaan: '', pekerjaan_lain: '', asal_unit_kerja: '', pns: false, pns_golongan: ''
                 },
-                
+
                 // Object Form yang sedang aktif (Edit/Tambah/Detail)
                 formData: {},
+
+                get filteredPendampingList() {
+                    if (!this.searchQuery.trim()) {
+                        return this.pendampingList;
+                    }
+
+                    const query = this.searchQuery.toLowerCase();
+                    return this.pendampingList.filter(item =>
+                        item.nama.toLowerCase().includes(query) ||
+                        item.no_registrasi.toLowerCase().includes(query)
+                    );
+                },
 
                 init() {
                     this.formData = { ...this.emptyForm };
@@ -309,18 +325,72 @@
                     if (type === 'form') {
                         this.formMode = mode;
                         if (mode === 'edit' && data) {
-                            this.formData = { ...data }; // Copy data to form
+                            this.formData = { ...data };
                         } else {
-                            this.formData = { ...this.emptyForm }; // Reset form
+                            this.formData = { ...this.emptyForm };
                         }
                     } else if (type === 'detail' && data) {
-                        this.formData = { ...data }; // Copy data to viewing state
+                        this.formData = { ...data };
+                    } else if (type === 'import') {
+                        this.importFile = null;
+                        this.importLoading = false;
                     }
                 },
 
                 closeModal() {
                     this.activeModal = '';
                     document.body.style.overflow = '';
+                },
+
+                handleFileSelect(event) {
+                    this.importFile = event.target.files[0] || null;
+                },
+
+                handleFileDrop(event) {
+                    this.importDragover = false;
+                    this.importFile = event.dataTransfer.files[0] || null;
+                },
+
+                async submitImport() {
+                    if (!this.importFile) return;
+
+                    this.importLoading = true;
+                    const formData = new FormData();
+                    formData.append('file', this.importFile);
+
+                    try {
+                        const response = await fetch('{{ route('pendamping.import') }}', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                            },
+                            body: formData
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            alert(result.message);
+                            this.closeModal();
+                            // Reload data dari backend
+                            this.loadPendampingData();
+                        } else {
+                            alert('Error: ' + result.message);
+                            if (result.errors && result.errors.length > 0) {
+                                console.error('Errors:', result.errors);
+                            }
+                        }
+                    } catch (error) {
+                        alert('Gagal mengimport: ' + error.message);
+                    } finally {
+                        this.importLoading = false;
+                    }
+                },
+
+                async loadPendampingData() {
+                    // TODO: Implement fetch data from backend
+                    // Untuk sekarang, gunakan dummy data
+                    console.log('Load pendamping data dari backend');
                 },
 
                 submitForm() {

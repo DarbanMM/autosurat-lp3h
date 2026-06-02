@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LetterController;
+use App\Http\Controllers\PendampingController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -70,3 +71,7 @@ Route::post('/logout', function () {
     // Setelah logout, arahkan kembali ke halaman login
     return redirect('/login');
 });
+
+// Pendamping Import & Download
+Route::post('/pendamping/import', [PendampingController::class, 'import'])->name('pendamping.import');
+Route::get('/pendamping/download-template/{format}', [PendampingController::class, 'downloadTemplate'])->name('pendamping.download-template');
