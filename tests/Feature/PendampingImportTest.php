@@ -63,11 +63,11 @@ REG-TEST-001,ID-TEST-001,LMB-001,NP-001,01/01/2025,Test Import,Jl Test,12345,Kec
 CSV;
         $file = UploadedFile::fake()->createWithContent('test.csv', $csv, 'text/plain');
 
-        $response = $this->postJson(route('pendamping.import'), [
-            'file' => $file,
-        ]);
+        $prepare = $this->postJson(route('pendamping.import.prepare'), ['file' => $file]);
+        $prepare->assertOk();
 
-        $response->assertOk()
-            ->assertJson(['success' => true]);
+        $importId = $prepare->json('import_id');
+        $chunk = $this->postJson(route('pendamping.import.chunk', $importId), ['offset' => 0]);
+        $chunk->assertOk()->assertJsonPath('success', true);
     }
 }

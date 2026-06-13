@@ -219,8 +219,24 @@
                         <div class="bg-gray-800 text-green-400 font-mono text-xs p-4 rounded-lg leading-relaxed flex flex-wrap gap-2 shadow-inner">
                             <span>id_pendamping,</span><span>id_lembaga,</span><span>no_pendaftaran,</span><span>no_registrasi,</span><span>tgl_berlaku,</span><span>nama,</span><span>alamat,</span><span>kode_pos,</span><span>kecamatan,</span><span>kabupaten,</span><span>provinsi,</span><span>no_hp,</span><span>tempat_lahir,</span><span>tgl_lahir,</span><span>nik,</span><span>pendidikan,</span><span>universitas,</span><span>status,</span><span>nama_lembaga,</span><span>sumber_data,</span><span>jumlah_pu,</span><span>pekerjaan,</span><span>pekerjaan_lain,</span><span>asal_unit_kerja,</span><span>pns,</span><span>pns_golongan</span>
                         </div>
-                        <p class="text-xs text-gray-500 mt-2">Header boleh berurutan bebas, tetapi nama kolom harus sama (gunakan underscore, mis. <code class="bg-gray-200 px-1 rounded">no_registrasi</code>). CSV dari Excel Indonesia biasanya memakai pemisah <strong>;</strong> — sudah didukung otomatis. Kolom wajib terisi: <strong>no_registrasi</strong> dan <strong>id_pendamping</strong>. Tanggal: d/m/Y atau Y-m-d. File besar (3500+ baris) dapat memakan waktu beberapa menit — jangan tutup halaman.</p>
+                        <p class="text-xs text-gray-500 mt-2">File besar (3500+ baris) diimport per batch dengan progress bar. Pilih <strong>Background</strong> untuk menutup halaman saat import berjalan (perlu queue worker).</p>
                     </div>
+
+                    <div x-show="importLoading" class="space-y-2">
+                        <div class="flex justify-between text-xs font-semibold text-gray-600">
+                            <span x-text="importStatusText"></span>
+                            <span x-text="importProgress + '%'"></span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                            <div class="bg-brand h-2.5 rounded-full transition-all duration-300" :style="'width:' + importProgress + '%'"></div>
+                        </div>
+                        <p class="text-xs text-gray-500" x-text="importDetailText"></p>
+                    </div>
+
+                    <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                        <input type="checkbox" x-model="importInBackground" class="rounded border-gray-300 text-brand focus:ring-brand" :disabled="importLoading">
+                        <span>Import di background (boleh tutup halaman setelah dimulai)</span>
+                    </label>
 
                     <div class="flex gap-3">
                         <a href="{{ route('pendamping.download-template', 'csv') }}" class="flex items-center gap-2 text-sm bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 px-4 py-2 rounded-lg font-medium transition-colors">
@@ -245,7 +261,8 @@
                     <button @click="closeModal()" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
                         Batalkan
                     </button>
-                    <button @click="submitImport" :disabled="!importFile || importLoading" :class="{'opacity-50 cursor-not-allowed': !importFile || importLoading}" class="px-5 py-2.5 text-sm font-medium text-white bg-brand rounded-lg hover:bg-brand-dark shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2" x-text="importLoading ? 'Sedang Import...' : 'Import'">
+                    <button @click="submitImport" :disabled="!importFile || importLoading" class="px-5 py-2.5 text-sm font-medium text-white bg-brand rounded-lg hover:bg-brand-dark shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span x-text="importLoading ? 'Sedang Import...' : 'Import'"></span>
                     </button>
                 </div>
             </div>
@@ -296,6 +313,11 @@
                 importFile: null,
                 importDragover: false,
                 importLoading: false,
+                importInBackground: false,
+                importProgress: 0,
+                importStatusText: '',
+                importDetailText: '',
+                importPollTimer: null,
                 listLoading: false,
 
                 pendampingList: [],
@@ -341,10 +363,19 @@
                     } else if (type === 'import') {
                         this.importFile = null;
                         this.importLoading = false;
+                        this.importInBackground = false;
+                        this.importProgress = 0;
+                        this.importStatusText = '';
+                        this.importDetailText = '';
+                        this.stopImportPolling();
                     }
                 },
 
                 closeModal() {
+                    if (this.importLoading && !this.importInBackground) {
+                        return;
+                    }
+                    this.stopImportPolling();
                     this.activeModal = '';
                     document.body.style.overflow = '';
                 },
@@ -358,62 +389,144 @@
                     this.importFile = event.dataTransfer.files[0] || null;
                 },
 
-                async submitImport() {
-                    if (!this.importFile) return;
+                stopImportPolling() {
+                    if (this.importPollTimer) {
+                        clearInterval(this.importPollTimer);
+                        this.importPollTimer = null;
+                    }
+                },
 
-                    this.importLoading = true;
+                importHeaders() {
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+                    return {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken,
+                    };
+                },
+
+                buildImportFormData() {
                     const formData = new FormData();
                     formData.append('file', this.importFile);
                     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
                     if (csrfToken) {
                         formData.append('_token', csrfToken);
                     }
+                    return formData;
+                },
+
+                async parseJsonResponse(response) {
+                    const contentType = response.headers.get('content-type') || '';
+                    if (!contentType.includes('application/json')) {
+                        if (response.status === 413) {
+                            throw new Error('File terlalu besar (HTTP 413).');
+                        }
+                        if (response.status === 504) {
+                            throw new Error('Timeout gateway (HTTP 504). Gunakan import di background atau chunked.');
+                        }
+                        throw new Error(`Respons non-JSON (HTTP ${response.status}).`);
+                    }
+                    return response.json();
+                },
+
+                updateImportProgress(result) {
+                    this.importProgress = result.progress_percent ?? 0;
+                    this.importStatusText = `${result.processed_rows ?? 0} / ${result.total_rows ?? 0} baris`;
+                    this.importDetailText = `Berhasil: ${result.imported_count ?? 0}, dilewatkan: ${result.skipped_count ?? 0}`;
+                },
+
+                async pollImportStatus(importId) {
+                    const response = await fetch(`{{ url('/pendamping/import') }}/${importId}/status`, {
+                        headers: this.importHeaders(),
+                    });
+                    const result = await this.parseJsonResponse(response);
+                    this.updateImportProgress(result);
+
+                    if (result.finished) {
+                        this.stopImportPolling();
+                        this.importLoading = false;
+                        const detail = (result.errors?.length) ? '\n\nDetail:\n' + result.errors.join('\n') : '';
+                        alert((result.message || 'Import selesai.') + detail);
+                        this.closeModal();
+                        this.loadPendampingData();
+                    }
+                },
+
+                async submitImport() {
+                    if (!this.importFile) return;
+
+                    this.importLoading = true;
+                    this.importProgress = 0;
+                    this.importStatusText = 'Mengunggah file...';
+                    this.importDetailText = '';
 
                     try {
-                        const response = await fetch('{{ route('pendamping.import') }}', {
-                            method: 'POST',
-                            headers: {
-                                'Accept': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'X-CSRF-TOKEN': csrfToken,
-                            },
-                            body: formData
-                        });
-
-                        const contentType = response.headers.get('content-type') || '';
-                        if (!contentType.includes('application/json')) {
-                            if (response.status === 413) {
-                                throw new Error('File terlalu besar untuk server (HTTP 413). Restart Docker setelah update, atau bagi file menjadi beberapa bagian (<3000 baris per file).');
+                        if (this.importInBackground) {
+                            const response = await fetch('{{ route('pendamping.import.async') }}', {
+                                method: 'POST',
+                                headers: this.importHeaders(),
+                                body: this.buildImportFormData(),
+                            });
+                            const result = await this.parseJsonResponse(response);
+                            if (!response.ok || !result.success) {
+                                throw new Error(result.message || 'Gagal memulai import background.');
                             }
-                            throw new Error(`Server mengembalikan respons non-JSON (HTTP ${response.status}). Periksa log Laravel.`);
-                        }
 
-                        const result = await response.json();
-
-                        if (!response.ok) {
-                            const validationMsg = result.errors?.file?.[0] || result.message;
-                            alert('Error: ' + (validationMsg || 'Import gagal'));
+                            alert(result.message);
+                            this.importLoading = false;
+                            this.activeModal = '';
+                            document.body.style.overflow = '';
+                            this.importPollTimer = setInterval(() => this.pollImportStatus(result.import_id), 3000);
                             return;
                         }
 
-                        const detail = (result.errors && result.errors.length)
-                            ? '\n\nDetail:\n' + result.errors.join('\n')
-                            : '';
+                        const prepareResponse = await fetch('{{ route('pendamping.import.prepare') }}', {
+                            method: 'POST',
+                            headers: this.importHeaders(),
+                            body: this.buildImportFormData(),
+                        });
+                        const prepare = await this.parseJsonResponse(prepareResponse);
+                        if (!prepareResponse.ok || !prepare.success) {
+                            throw new Error(prepare.message || 'Gagal menyiapkan file.');
+                        }
 
-                        if (result.success && result.imported > 0) {
-                            alert(result.message + (result.skipped > 0 ? detail : ''));
-                            this.closeModal();
-                            this.loadPendampingData();
-                        } else {
-                            alert((result.message || 'Import gagal.') + detail);
-                            if (result.errors?.length) {
-                                console.error('Import errors:', result.errors);
+                        const importId = prepare.import_id;
+                        const totalRows = prepare.total_rows;
+                        const chunkSize = prepare.chunk_size;
+                        let offset = 0;
+
+                        while (offset < totalRows) {
+                            this.importStatusText = `Memproses batch ${Math.floor(offset / chunkSize) + 1}...`;
+                            const chunkResponse = await fetch(`{{ url('/pendamping/import') }}/${importId}/chunk`, {
+                                method: 'POST',
+                                headers: {
+                                    ...this.importHeaders(),
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ offset }),
+                            });
+                            const chunk = await this.parseJsonResponse(chunkResponse);
+                            if (!chunkResponse.ok || !chunk.success) {
+                                throw new Error(chunk.message || 'Gagal memproses batch.');
+                            }
+
+                            this.updateImportProgress(chunk);
+                            offset += chunkSize;
+
+                            if (chunk.finished) {
+                                const detail = (chunk.errors?.length) ? '\n\nDetail:\n' + chunk.errors.join('\n') : '';
+                                alert(`Berhasil import ${chunk.imported_count} data pendamping.${chunk.skipped_count > 0 ? ' ' + chunk.skipped_count + ' baris dilewatkan.' : ''}${detail}`);
+                                this.closeModal();
+                                this.loadPendampingData();
+                                break;
                             }
                         }
                     } catch (error) {
                         alert('Gagal mengimport: ' + error.message);
                     } finally {
-                        this.importLoading = false;
+                        if (!this.importPollTimer) {
+                            this.importLoading = false;
+                        }
                     }
                 },
 

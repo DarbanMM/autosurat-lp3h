@@ -74,5 +74,9 @@ Route::post('/logout', function () {
 
 // Pendamping API
 Route::get('/pendamping/data', [PendampingController::class, 'index'])->name('pendamping.data');
+Route::post('/pendamping/import/prepare', [PendampingController::class, 'prepareImport'])->name('pendamping.import.prepare');
+Route::post('/pendamping/import/{importId}/chunk', [PendampingController::class, 'importChunk'])->name('pendamping.import.chunk');
+Route::post('/pendamping/import/async', [PendampingController::class, 'startAsyncImport'])->name('pendamping.import.async');
+Route::get('/pendamping/import/{importId}/status', [PendampingController::class, 'importStatus'])->name('pendamping.import.status');
 Route::post('/pendamping/import', [PendampingController::class, 'import'])->name('pendamping.import');
 Route::get('/pendamping/download-template/{format}', [PendampingController::class, 'downloadTemplate'])->name('pendamping.download-template');

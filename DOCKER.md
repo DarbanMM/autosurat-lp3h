@@ -127,6 +127,21 @@ docker-compose up --build -d
 
 Upload limits are set to **64 MB** in `nginx.conf` and `docker/php/uploads.ini`.
 
+### Large imports (3500+ rows)
+Imports run in **chunks of 150 rows** with a progress bar. For background import, ensure the **queue worker** is running:
+
+```bash
+docker-compose up -d queue
+# or: docker-compose exec app php artisan queue:work --timeout=7200
+```
+
+CLI import (no browser timeout):
+
+```bash
+docker-compose exec app php artisan pendamping:import "database/CSV Data Pendamping.csv"
+docker-compose exec app php artisan pendamping:import "database/CSV Data Pendamping.csv" --queue
+```
+
 ### Port Already in Use
 Change ports in `docker-compose.yml`:
 ```yaml
