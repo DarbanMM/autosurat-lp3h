@@ -1,4 +1,4 @@
-id_pendamping,id_lembaga,no_pendaftaran,no_registrasi,tgl_berlaku,nama,alamat,kode_pos,kecamatan,kabupaten,provinsi,no_hp,tempat_lahir,tgl_lahir,nik,pendidikan,universitas,status,nama_lembaga,sumber_data,jumlah_pu,pekerjaan,pekerjaan_lain,asal_unit_kerja,pns,pns_golongan
-P01,L01,REG-001,10001,2026-12-31,Ahmad Santoso,Jl. Merdeka 10,50123,Semarang Barat,Semarang,Jawa Tengah,0812345678,Semarang,1990-01-01,33740001,S1,Undip,Aktif,LP3H Pusat,Manual,10,Guru,-,SMA 1,,III/a
-P02,L01,REG-002,10002,2026-12-31,Budi Raharjo,Jl. Pahlawan,50124,Semarang Selatan,Semarang,Jawa Tengah,0819876543,Kendal,1992-05-15,33740002,S1,Unnes,Aktif,LP3H Pusat,Manual,5,Swasta,Pedagang,PT Mandiri,,
-P03,L02,REG-003,10003,2026-12-31,Citra Kirana,Jl. Sudirman,50125,Banyumanik,Semarang,Jawa Tengah,0856789012,Demak,1995-10-20,33740003,S2,UGM,Aktif,LP3H Cabang,Import,15,Dosen,-,Polines,,III/b
+id_pendamping,id_lembaga,no_pendaftaran,no_registrasi,tgl_berlaku,nama,alamat,kode_pos,kecamatan,kabupaten,provinsi,no_hp,tempat_lahir,tgl_lahir,nik,pendidikan,universitas,status,nama_lembaga,sumber_data,jumlah_pu,pekerjaan,pekerjaan_lain,asal_unit_kerja,pns_golongan
+P01,L01,REG-001,10001,2026-12-31,Ahmad Santoso,Jl. Merdeka 10,50123,Semarang Barat,Semarang,Jawa Tengah,0812345678,Semarang,1990-01-01,33740001,S1,Undip,Aktif,LP3H Pusat,Manual,10,Guru,-,SMA 1,III/a
+P02,L01,REG-002,10002,2026-12-31,Budi Raharjo,Jl. Pahlawan,50124,Semarang Selatan,Semarang,Jawa Tengah,0819876543,Kendal,1992-05-15,33740002,S1,Unnes,Aktif,LP3H Pusat,Manual,5,Swasta,Pedagang,PT Mandiri,
+P03,L02,REG-003,10003,2026-12-31,Citra Kirana,Jl. Sudirman,50125,Banyumanik,Semarang,Jawa Tengah,0856789012,Demak,1995-10-20,33740003,S2,UGM,Aktif,LP3H Cabang,Import,15,Dosen,-,Polines,III/b

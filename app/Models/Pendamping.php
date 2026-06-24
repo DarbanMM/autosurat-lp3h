@@ -45,6 +45,7 @@ class Pendamping extends Model
         'tgl_berlaku' => 'date',
         'tgl_lahir' => 'date',
         'jumlah_pu' => 'integer',
+        'pns' => 'boolean',
     ];
 
     protected function pns(): Attribute

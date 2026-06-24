@@ -200,7 +200,7 @@ class PendampingController extends Controller
             'nama', 'alamat', 'kode_pos', 'kecamatan', 'kabupaten', 'provinsi', 'no_hp',
             'tempat_lahir', 'tgl_lahir', 'nik', 'pendidikan', 'universitas', 'status',
             'nama_lembaga', 'sumber_data', 'jumlah_pu', 'pekerjaan', 'pekerjaan_lain',
-            'asal_unit_kerja', 'pns', 'pns_golongan',
+            'asal_unit_kerja', 'pns_golongan',
         ];
 
         if ($format === 'csv') {

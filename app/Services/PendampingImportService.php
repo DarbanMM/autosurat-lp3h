@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Pendamping;
 use App\Models\PendampingImport;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
@@ -17,7 +18,7 @@ class PendampingImportService
         'tgl_berlaku', 'nama', 'alamat', 'kode_pos', 'kecamatan', 'kabupaten',
         'provinsi', 'no_hp', 'tempat_lahir', 'tgl_lahir', 'nik', 'pendidikan',
         'universitas', 'status', 'nama_lembaga', 'sumber_data', 'jumlah_pu',
-        'pekerjaan', 'pekerjaan_lain', 'asal_unit_kerja', 'pns', 'pns_golongan',
+        'pekerjaan', 'pekerjaan_lain', 'asal_unit_kerja', 'pns_golongan',
     ];
 
     private const UPSERT_UPDATE_COLUMNS = [
@@ -222,10 +223,38 @@ class PendampingImportService
 
         $imported = 0;
         if ($validRows !== []) {
-            $bulkResult = $this->bulkUpsert($validRows, $rowLineNumbers);
-            $imported = $bulkResult['imported'];
-            $skipped += $bulkResult['skipped'];
-            $errors = array_merge($errors, $bulkResult['errors']);
+            // Check for existing records and skip duplicates
+            $noRegistrasiList = array_column($validRows, 'no_registrasi');
+            $existingNoRegistrasi = DB::table('pendamping')
+                ->whereIn('no_registrasi', $noRegistrasiList)
+                ->pluck('no_registrasi')
+                ->flip()
+                ->all();
+
+            if ($existingNoRegistrasi !== []) {
+                $newRows = [];
+                $newLineNumbers = [];
+
+                foreach ($validRows as $i => $row) {
+                    if (isset($existingNoRegistrasi[$row['no_registrasi']])) {
+                        $skipped++;
+                        $errors[] = 'Baris '.$rowLineNumbers[$i].': Data sudah ada (no_registrasi: '.$row['no_registrasi'].')';
+                    } else {
+                        $newRows[] = $row;
+                        $newLineNumbers[] = $rowLineNumbers[$i];
+                    }
+                }
+
+                $validRows = $newRows;
+                $rowLineNumbers = $newLineNumbers;
+            }
+
+            if ($validRows !== []) {
+                $bulkResult = $this->bulkUpsert($validRows, $rowLineNumbers);
+                $imported = $bulkResult['imported'];
+                $skipped += $bulkResult['skipped'];
+                $errors = array_merge($errors, $bulkResult['errors']);
+            }
         }
 
         $import->update([
@@ -254,12 +283,13 @@ class PendampingImportService
         foreach ($rows as $row) {
             $row['created_at'] = $now;
             $row['updated_at'] = $now;
-            $row['pns'] = (bool) ($row['pns'] ?? false);
+            $hasPnsGolongan = isset($row['pns_golongan']) && trim((string) $row['pns_golongan']) !== '';
+            $row['pns'] = DB::raw($hasPnsGolongan ? 'true' : 'false');
             $prepared[] = $row;
         }
 
         try {
-            DB::table('pendamping')->upsert(
+            Pendamping::upsert(
                 $prepared,
                 ['no_registrasi'],
                 self::UPSERT_UPDATE_COLUMNS
@@ -284,13 +314,13 @@ class PendampingImportService
         foreach ($rows as $i => $row) {
             $line = $lineNumbers[$i] ?? ($i + 2);
             try {
-                DB::table('pendamping')->upsert([$row], ['no_registrasi'], self::UPSERT_UPDATE_COLUMNS);
+                Pendamping::upsert([$row], ['no_registrasi'], self::UPSERT_UPDATE_COLUMNS);
                 $imported++;
             } catch (QueryException $e) {
                 if (str_contains($e->getMessage(), 'pendamping_nik_unique')) {
                     unset($row['nik']);
                     try {
-                        DB::table('pendamping')->upsert([$row], ['no_registrasi'], self::UPSERT_UPDATE_COLUMNS);
+                        Pendamping::upsert([$row], ['no_registrasi'], self::UPSERT_UPDATE_COLUMNS);
                         $imported++;
                         continue;
                     } catch (QueryException $inner) {
@@ -325,7 +355,8 @@ class PendampingImportService
             }
         }
 
-        $data['pns'] = (bool) ($data['pns'] ?? false);
+        $hasPnsGolongan = isset($data['pns_golongan']) && trim((string) $data['pns_golongan']) !== '';
+        $data['pns'] = DB::raw($hasPnsGolongan ? 'true' : 'false');
         $data['jumlah_pu'] = isset($data['jumlah_pu']) && $data['jumlah_pu'] !== ''
             ? (int) $data['jumlah_pu'] : null;
 
@@ -343,9 +374,7 @@ class PendampingImportService
             $value = $row[$headerIndexes[$col]] ?? null;
             $value = trim((string) $value);
 
-            if ($col === 'pns') {
-                continue;
-            }
+
 
             if (in_array($col, ['nik', 'no_hp', 'no_registrasi', 'id_pendamping', 'id_lembaga', 'no_pendaftaran'], true)
                 && preg_match('/^[0-9.E+\-]+$/i', $value)) {
@@ -375,8 +404,7 @@ class PendampingImportService
             ];
         }
 
-        $pnsCell = trim((string) ($row[$headerIndexes['pns']] ?? ''));
-        $data['pns'] = $this->resolvePnsBoolean($pnsCell, $data['pns_golongan'] ?? '');
+
 
         return ['data' => $data, 'error' => null];
     }

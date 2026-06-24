@@ -24,11 +24,11 @@ Checking status for docker: docker-compose ps
 How to access for local: http://localhost
 
 Admins Page	            URL
-Login	                http://localhost/login
+Login	                  http://localhost/login
 Dashboard               http://localhost/dashboard
-Daftar Surat	        http://localhost/daftar-surat
+Daftar Surat	          http://localhost/daftar-surat
 Format Nomor Surat	    http://localhost/format-nomor-surat
 Riwayat Surat Keluar    http://localhost/riwayat-surat
 Pendamping	            http://localhost/pendamping
-User	                http://localhost/user
+User	                  http://localhost/user
 Kepala LP3H	            http://localhost/kepala-lp3h
