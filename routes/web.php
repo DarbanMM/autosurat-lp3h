@@ -72,6 +72,8 @@ Route::post('/logout', function () {
     return redirect('/login');
 });
 
+use App\Http\Controllers\UserController;
+
 // Pendamping API
 Route::get('/pendamping/data', [PendampingController::class, 'index'])->name('pendamping.data');
 Route::post('/pendamping/import/prepare', [PendampingController::class, 'prepareImport'])->name('pendamping.import.prepare');
@@ -80,3 +82,15 @@ Route::post('/pendamping/import/async', [PendampingController::class, 'startAsyn
 Route::get('/pendamping/import/{importId}/status', [PendampingController::class, 'importStatus'])->name('pendamping.import.status');
 Route::post('/pendamping/import', [PendampingController::class, 'import'])->name('pendamping.import');
 Route::get('/pendamping/download-template/{format}', [PendampingController::class, 'downloadTemplate'])->name('pendamping.download-template');
+
+// User API
+Route::get('/user/data', [UserController::class, 'index'])->name('user.data');
+Route::post('/user/store', [UserController::class, 'store'])->name('user.store');
+Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
+Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
+Route::post('/user/sync', [UserController::class, 'sync'])->name('user.sync');
+Route::post('/user/import/prepare', [UserController::class, 'prepareImport'])->name('user.import.prepare');
+Route::post('/user/import/{importId}/chunk', [UserController::class, 'importChunk'])->name('user.import.chunk');
+Route::get('/user/import/{importId}/status', [UserController::class, 'importStatus'])->name('user.import.status');
+Route::get('/user/export/{format}', [UserController::class, 'export'])->name('user.export');
+Route::get('/user/download-template/{format}', [UserController::class, 'downloadTemplate'])->name('user.download-template');
