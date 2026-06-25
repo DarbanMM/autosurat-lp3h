@@ -67,18 +67,24 @@
             <form action="{{ route('login') }}" method="POST" class="space-y-6">
                 @csrf
 
-                <!-- No. Registrasi Input -->
+                @if ($errors->any())
+                    <div class="mb-4 p-4 bg-red-100 text-red-700 rounded-xl text-sm border border-red-200">
+                        {{ $errors->first() }}
+                    </div>
+                @endif
+
+                <!-- Username / No. Registrasi Input -->
                 <div class="input-group relative">
-                    <label for="no_registrasi" class="block text-sm font-medium text-gray-700 mb-1">No. Registrasi</label>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username / No. Registrasi</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                             </svg>
                         </div>
-                        <input type="text" name="no_registrasi" id="no_registrasi" required 
+                        <input type="text" name="username" id="username" value="{{ old('username') }}" required 
                             class="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#670075]/20 focus:border-[#670075] transition-all bg-gray-50 focus:bg-white placeholder-gray-400 sm:text-sm"
-                            placeholder="Masukkan nomor registrasi">
+                            placeholder="Masukkan username atau nomor registrasi">
                     </div>
                 </div>
 

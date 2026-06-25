@@ -69,8 +69,14 @@
                 
                 <div class="flex-1 flex justify-end">
                     <div class="flex items-center gap-3">
-                        <span class="text-sm font-semibold text-gray-700 hidden sm:block">Agus Susanto</span>
-                        <div class="h-8 w-8 rounded-full bg-brand text-white flex items-center justify-center text-xs font-bold">AS</div>
+                        @php
+                            $currentUser = \Illuminate\Support\Facades\Auth::user();
+                            $currentPendamping = $currentUser ? \App\Models\Pendamping::where('no_registrasi', $currentUser->username)->first() : null;
+                            $displayName = $currentPendamping ? $currentPendamping->nama : ($currentUser ? $currentUser->username : 'User');
+                            $initials = substr($displayName, 0, 2);
+                        @endphp
+                        <span class="text-sm font-semibold text-gray-700 hidden sm:block">{{ $displayName }}</span>
+                        <div class="h-8 w-8 rounded-full bg-brand text-white flex items-center justify-center text-xs font-bold uppercase">{{ $initials }}</div>
                     </div>
                 </div>
             </header>

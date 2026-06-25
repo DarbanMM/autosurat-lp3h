@@ -1,0 +1,29 @@
+Detail:
+Baris 1138: Data sudah ada (username: 2306001517)
+Baris 2386: Data sudah ada (username: 2504000654)
+Baris 2470: Data sudah ada (username: 2306001219)
+Baris 2956: Data sudah ada (username: 2306000374)
+Baris 3129: Data sudah ada (username: 2306000419)
+Baris 3328: Data sudah ada (username: 2306001532)
+Baris 3348: Data sudah ada (username: 2401002713)
+Baris 3483: Data sudah ada (username: 2402002208)
+
+Yang belum masuk di database:
+2306001517 Ria Andriani
+2504000654 R.A.Farasifa Salsabilah
+2306001219 Siti Novie Kistia
+2306000374 Nurbaiti
+2306000419 Siti Umariyah
+2306001532 Almunawaroh, S.Ag
+2401002713 Juli Hukman
+2402002208 IKA PUJIHASTUTI
+
+Yang sudah ada di database:
+2306001517 Binti Nur Halimah
+2504000654 RAHMAD SAPUTRA
+2306001219 Haryanto
+2306000374 Linatun Mubarokah
+2306000419 KHOIRUL ARIF YANTO
+2306001532 Rizqunnisa Giwanti
+2401002713 Arma Okgi Nugroho
+2402002208 Muhammad Rafii Sihotang

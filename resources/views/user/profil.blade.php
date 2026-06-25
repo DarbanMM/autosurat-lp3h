@@ -29,49 +29,57 @@
                 
                 <div class="border-b border-gray-100 pb-4">
                     <dt class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Nama Lengkap</dt>
-                    <dd class="text-base font-bold text-gray-900">Agus Susanto</dd>
+                    <dd class="text-base font-bold text-gray-900">{{ $pendamping->nama ?? '-' }}</dd>
                 </div>
 
                 <div class="border-b border-gray-100 pb-4">
                     <dt class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Nomor Register</dt>
                     <dd class="text-base font-mono font-bold text-[#670075] bg-purple-50 inline-block px-3 py-1 rounded border border-purple-100">
-                        2209000871
+                        {{ $pendamping->no_registrasi ?? \Illuminate\Support\Facades\Auth::user()->username }}
                     </dd>
                 </div>
 
                 <div class="border-b border-gray-100 pb-4 md:col-span-2">
                     <dt class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Alamat Domisili</dt>
                     <dd class="text-base font-medium text-gray-800 leading-relaxed">
-                        Jl. Bimosari No 285D, RT 013 RW 003, Tahunan, Umbulharjo, Yogyakarta
+                        {{ $pendamping->alamat ?? '-' }}
                     </dd>
                 </div>
 
                 <div class="border-b border-gray-100 pb-4">
                     <dt class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Kecamatan</dt>
-                    <dd class="text-base font-medium text-gray-800">Imogiri</dd>
+                    <dd class="text-base font-medium text-gray-800">{{ $pendamping->kecamatan ?? '-' }}</dd>
                 </div>
 
                 <div class="border-b border-gray-100 pb-4">
                     <dt class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Kabupaten</dt>
-                    <dd class="text-base font-medium text-gray-800">KAB. BANTUL</dd>
+                    <dd class="text-base font-medium text-gray-800">{{ $pendamping->kabupaten ?? '-' }}</dd>
                 </div>
 
                 <div class="border-b border-gray-100 pb-4">
                     <dt class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Provinsi</dt>
-                    <dd class="text-base font-medium text-gray-800">DI Yogyakarta</dd>
+                    <dd class="text-base font-medium text-gray-800">{{ $pendamping->provinsi ?? '-' }}</dd>
                 </div>
 
                 <div class="border-b border-gray-100 pb-4">
                     <dt class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">No HP / WhatsApp</dt>
-                    <dd class="text-base font-medium text-gray-800">83869387080</dd>
+                    <dd class="text-base font-medium text-gray-800">{{ $pendamping->no_hp ?? '-' }}</dd>
                 </div>
 
                 <div class="md:col-span-2 mt-2">
                     <dt class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Status Pendamping</dt>
                     <dd>
-                        <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold bg-green-100 text-green-800 border border-green-200 shadow-sm">
+                        @php
+                            $status = strtoupper($pendamping->status ?? 'TIDAK DIKETAHUI');
+                            $isDisetujui = $status === 'DISETUJUI';
+                        @endphp
+                        <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold shadow-sm {{ $isDisetujui ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200' }}">
+                            @if($isDisetujui)
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                            DISETUJUI
+                            @else
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"></path></svg>
+                            @endif
+                            {{ $status }}
                         </span>
                     </dd>
                 </div>
