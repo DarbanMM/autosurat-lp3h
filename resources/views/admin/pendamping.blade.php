@@ -43,7 +43,7 @@
                     Tambah Pendamping
                 </button>
 
-                <input type="text" @keyup="searchQuery = $event.target.value" placeholder="Cari nama atau no registrasi..." class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand focus:border-transparent shadow-sm transition-all" />
+                <input type="text" x-model.debounce.500ms="searchQuery" placeholder="Cari nama atau no registrasi..." class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand focus:border-transparent shadow-sm transition-all" />
 
             </div>
         </div>
@@ -63,12 +63,12 @@
                         <tr x-show="listLoading">
                             <td colspan="4" class="px-6 py-8 text-center text-gray-500">Memuat data...</td>
                         </tr>
-                        <tr x-show="!listLoading && filteredPendampingList.length === 0">
+                        <tr x-show="!listLoading && pendampingList.length === 0">
                             <td colspan="4" class="px-6 py-8 text-center text-gray-500">Belum ada data pendamping. Import CSV atau tambah data baru.</td>
                         </tr>
-                        <template x-for="(item, index) in filteredPendampingList" :key="item.no_registrasi">
+                        <template x-for="(item, index) in pendampingList" :key="item.no_registrasi">
                             <tr class="hover:bg-gray-50 transition-colors bg-white">
-                                <td class="px-6 py-4 text-center font-medium text-gray-900" x-text="index + 1"></td>
+                                <td class="px-6 py-4 text-center font-medium text-gray-900" x-text="(pagination.current_page - 1) * limit + index + 1"></td>
                                 <td class="px-6 py-4 font-mono font-semibold text-brand" x-text="item.no_registrasi"></td>
                                 <td class="px-6 py-4 font-semibold text-gray-800" x-text="item.nama"></td>
                                 <td class="px-6 py-4 text-center">
@@ -88,6 +88,46 @@
                         </template>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Pagination Section -->
+            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row items-center justify-end gap-5 text-sm text-gray-600">
+                
+                <!-- Jumlah Data -->
+                <div class="font-medium">
+                    Jumlah Data (<span x-text="pagination.total"></span> Data)
+                </div>
+
+                <!-- Rows per page -->
+                <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-lg shadow-sm px-2 py-1">
+                    <select x-model="limit" class="bg-transparent text-gray-700 text-sm font-medium focus:ring-0 outline-none cursor-pointer py-1">
+                        <option value="10">10 baris</option>
+                        <option value="100">100 baris</option>
+                        <option value="1000">1000 baris</option>
+                    </select>
+                </div>
+
+                <!-- Pagination Controls -->
+                <div class="flex items-center gap-3">
+                    <button @click="changePage(pagination.current_page - 1)" :disabled="pagination.current_page <= 1" class="p-1.5 rounded-lg border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 hover:text-brand disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    
+                    <span class="font-medium flex items-center gap-2">
+                        Page 
+                        <input type="number" 
+                               x-model.lazy="pagination.current_page" 
+                               @change="changePage(pagination.current_page)"
+                               class="bg-gray-800 text-white px-2 py-1 rounded shadow-inner text-sm font-bold w-14 text-center focus:ring-2 focus:ring-brand outline-none appearance-none" 
+                               min="1" 
+                               :max="pagination.last_page">
+                        of <span x-text="pagination.last_page"></span>
+                    </span>
+                    
+                    <button @click="changePage(pagination.current_page + 1)" :disabled="pagination.current_page >= pagination.last_page" class="p-1.5 rounded-lg border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 hover:text-brand disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -308,6 +348,12 @@
                 activeModal: '', // '', 'form', 'import', 'detail'
                 formMode: 'add', // 'add', 'edit'
                 searchQuery: '',
+                limit: 100,
+                pagination: {
+                    current_page: 1,
+                    last_page: 1,
+                    total: 0
+                },
 
                 // Import Related
                 importFile: null,
@@ -330,20 +376,16 @@
                 // Object Form yang sedang aktif (Edit/Tambah/Detail)
                 formData: {},
 
-                get filteredPendampingList() {
-                    if (!this.searchQuery.trim()) {
-                        return this.pendampingList;
-                    }
-
-                    const query = this.searchQuery.toLowerCase();
-                    return this.pendampingList.filter(item =>
-                        item.nama.toLowerCase().includes(query) ||
-                        item.no_registrasi.toLowerCase().includes(query)
-                    );
-                },
-
                 init() {
                     this.formData = { ...this.emptyForm };
+                    this.$watch('searchQuery', () => {
+                        this.pagination.current_page = 1;
+                        this.loadPendampingData();
+                    });
+                    this.$watch('limit', () => {
+                        this.pagination.current_page = 1;
+                        this.loadPendampingData();
+                    });
                     this.loadPendampingData();
                 },
 
@@ -532,33 +574,37 @@
 
                 async loadPendampingData() {
                     this.listLoading = true;
-
                     try {
-                        const params = new URLSearchParams();
-                        if (this.searchQuery.trim()) {
-                            params.set('search', this.searchQuery.trim());
-                        }
-
-                        const url = '{{ route('pendamping.data') }}' + (params.toString() ? `?${params}` : '');
-                        const response = await fetch(url, {
+                        const params = new URLSearchParams({
+                            search: this.searchQuery,
+                            limit: this.limit,
+                            page: this.pagination.current_page
+                        });
+                        const response = await fetch(`{{ route('pendamping.data') }}?${params.toString()}`, {
                             headers: {
                                 'Accept': 'application/json',
                                 'X-Requested-With': 'XMLHttpRequest',
                             },
                         });
-
-                        if (!response.ok) {
-                            throw new Error('Gagal memuat data pendamping.');
-                        }
-
-                        const result = await response.json();
+                        const result = await this.parseJsonResponse(response);
+                        if (!result.success) throw new Error(result.message || 'Gagal memuat.');
                         this.pendampingList = result.data || [];
+                        this.pagination = result.pagination || { current_page: 1, last_page: 1, total: 0 };
                     } catch (error) {
-                        console.error(error);
-                        alert('Gagal memuat daftar pendamping: ' + error.message);
+                        console.error('Error load pendamping:', error);
+                        alert('Gagal memuat data pendamping: ' + error.message);
                     } finally {
                         this.listLoading = false;
                     }
+                },
+                
+                changePage(page) {
+                    page = parseInt(page);
+                    if (isNaN(page) || page < 1) page = 1;
+                    if (page > this.pagination.last_page) page = this.pagination.last_page;
+                    
+                    this.pagination.current_page = page;
+                    this.loadPendampingData();
                 },
 
                 submitForm() {

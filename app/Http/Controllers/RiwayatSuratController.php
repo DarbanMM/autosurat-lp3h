@@ -19,7 +19,7 @@ class RiwayatSuratController extends Controller
         // Sort by latest created_at or tgl_dibuat
         $query->orderBy('created_at', 'desc')->orderBy('id_riwayat', 'desc');
 
-        $perPage = 100;
+        $perPage = $request->input('limit', 100);
         $riwayat = $query->paginate($perPage);
 
         return response()->json([
@@ -288,6 +288,15 @@ class RiwayatSuratController extends Controller
             if ($tahun) {
                 $query->whereYear('created_at', $tahun);
             }
+        }
+
+        if ($request->filled('search')) {
+            $search = strtolower($request->input('search'));
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(nama_surat) like ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(nomor_surat) like ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(keterangan) like ?', ["%{$search}%"]);
+            });
         }
 
         return $query;

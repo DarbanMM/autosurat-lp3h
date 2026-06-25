@@ -18,9 +18,31 @@ class UserController extends Controller
     /**
      * List all users.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::orderBy('id')->get()->map(fn (User $user) => [
+        $query = User::query();
+
+        if ($request->filled('search')) {
+            $search = strtolower($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where(DB::raw('LOWER(username)'), 'like', "%{$search}%")
+                  ->orWhere(DB::raw('LOWER(no_registrasi)'), 'like', "%{$search}%")
+                  ->orWhere(DB::raw('LOWER(role)'), 'like', "%{$search}%");
+            });
+        }
+
+        // Sort:
+        // 1. Admin first
+        // 2. Belum di-assign (no password) first
+        // 3. Username alphabetical
+        $query->orderByRaw("CASE WHEN role = 'admin' THEN 0 ELSE 1 END ASC")
+              ->orderByRaw("CASE WHEN password IS NULL OR password = '' THEN 0 ELSE 1 END ASC")
+              ->orderBy('username', 'asc');
+
+        $limit = $request->input('limit', 100);
+        $paginator = $query->paginate($limit);
+
+        $data = collect($paginator->items())->map(fn (User $user) => [
             'id' => $user->id,
             'username' => $user->username,
             'has_password' => $user->password !== null && $user->password !== '',
@@ -28,7 +50,16 @@ class UserController extends Controller
             'no_registrasi' => $user->no_registrasi,
         ]);
 
-        return response()->json(['success' => true, 'data' => $users]);
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+            'pagination' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+            ],
+        ]);
     }
 
     /**

@@ -108,3 +108,9 @@ use App\Http\Controllers\RiwayatSuratController;
 
 Route::get('/riwayat-surat/data', [RiwayatSuratController::class, 'index'])->name('riwayat-surat.data');
 Route::get('/riwayat-surat/export', [RiwayatSuratController::class, 'export'])->name('riwayat-surat.export');
+
+// Data Kepala LP3H API
+use App\Http\Controllers\DataKetuaController;
+
+Route::get('/kepala-lp3h/data', [DataKetuaController::class, 'index'])->name('kepala-lp3h.data');
+Route::post('/kepala-lp3h/update', [DataKetuaController::class, 'update'])->name('kepala-lp3h.update');

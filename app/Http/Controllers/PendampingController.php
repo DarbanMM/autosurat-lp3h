@@ -25,11 +25,20 @@ class PendampingController extends Controller
             });
         }
 
-        $data = $query->get()->map(fn (Pendamping $pendamping) => $this->formatPendampingForJson($pendamping));
+        $perPage = $request->input('limit', 100);
+        $paginator = $query->paginate($perPage);
+
+        $data = collect($paginator->items())->map(fn (Pendamping $pendamping) => $this->formatPendampingForJson($pendamping));
 
         return response()->json([
             'success' => true,
             'data' => $data,
+            'pagination' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+            ],
         ]);
     }
 

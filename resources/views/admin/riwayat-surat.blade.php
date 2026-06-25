@@ -67,12 +67,13 @@
                     </button>
                 </div>
 
-                <div x-show="filterTipe !== ''" x-transition>
-                    <button @click="resetFilter()" class="bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-medium py-2.5 px-5 rounded-lg text-sm transition-colors shadow-sm focus:ring-4 focus:ring-gray-200">
-                        Reset
+                <div class="w-full sm:w-auto mt-4 sm:mt-0 ml-auto self-end flex items-center gap-3">
+                    <input type="text" x-model.debounce.500ms="searchQuery" placeholder="Cari nama atau nomor surat..." class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand focus:border-transparent shadow-sm transition-all w-full sm:w-64" />
+                    
+                    <button @click="resetFilter" class="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-gray-200 transition-colors shadow-sm">
+                        Reset Filter
                     </button>
                 </div>
-
             </div>
         </div>
 
@@ -129,18 +130,41 @@
                 </table>
             </div>
 
-            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <span class="text-sm text-gray-700">
-                    Menampilkan <span class="font-semibold text-gray-900" x-text="pagination.from || 0"></span> hingga <span class="font-semibold text-gray-900" x-text="pagination.to || 0"></span> dari <span class="font-semibold text-gray-900" x-text="pagination.total"></span> entri (Max 100/Page)
-                </span>
-                <div class="inline-flex mt-2 xs:mt-0 shadow-sm rounded-md" x-show="pagination.last_page > 1">
-                    <button @click="changePage(pagination.current_page - 1)" :disabled="pagination.current_page <= 1" class="flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        <svg class="w-4 h-4 me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        Prev
+            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row items-center justify-end gap-5 text-sm text-gray-600">
+                
+                <!-- Jumlah Data -->
+                <div class="font-medium">
+                    Jumlah Data (<span x-text="pagination.total"></span> Data)
+                </div>
+
+                <!-- Rows per page -->
+                <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-lg shadow-sm px-2 py-1">
+                    <select x-model="limit" class="bg-transparent text-gray-700 text-sm font-medium focus:ring-0 outline-none cursor-pointer py-1">
+                        <option value="10">10 baris</option>
+                        <option value="100">100 baris</option>
+                        <option value="1000">1000 baris</option>
+                    </select>
+                </div>
+
+                <!-- Pagination Controls -->
+                <div class="flex items-center gap-3">
+                    <button @click="changePage(pagination.current_page - 1)" :disabled="pagination.current_page <= 1" class="p-1.5 rounded-lg border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 hover:text-brand disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                     </button>
-                    <button @click="changePage(pagination.current_page + 1)" :disabled="pagination.current_page >= pagination.last_page" class="flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 border-s-0 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        Next
-                        <svg class="w-4 h-4 ms-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    
+                    <span class="font-medium flex items-center gap-2">
+                        Page 
+                        <input type="number" 
+                               x-model.lazy="pagination.current_page" 
+                               @change="changePage(pagination.current_page)"
+                               class="bg-gray-800 text-white px-2 py-1 rounded shadow-inner text-sm font-bold w-14 text-center focus:ring-2 focus:ring-brand outline-none appearance-none" 
+                               min="1" 
+                               :max="pagination.last_page">
+                        of <span x-text="pagination.last_page"></span>
+                    </span>
+                    
+                    <button @click="changePage(pagination.current_page + 1)" :disabled="pagination.current_page >= pagination.last_page" class="p-1.5 rounded-lg border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 hover:text-brand disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </button>
                 </div>
             </div>
@@ -238,43 +262,59 @@
     <script>
         function riwayatSurat() {
             return {
+                // State untuk Filter di Halaman
+                filterTipe: '',
+                filterBulan: '',
+                filterTahun: '',
+                searchQuery: '',
+                limit: 100,
+
+                // State untuk Modal Cetak
+                isModalOpen: false,
+                cetakTipe: 'minggu',
+                cetakBulan: '',
+                cetakTahun: '',
+                cetakFormat: 'xlsx',
+
                 // List State
                 items: [],
                 listLoading: false,
                 pagination: {
                     current_page: 1,
                     last_page: 1,
-                    per_page: 100,
                     total: 0,
-                    from: 0,
-                    to: 0
                 },
 
-                // State untuk Filter di Halaman
-                filterTipe: '',
-                filterBulan: '',
-                filterTahun: '',
-
-                // State untuk Modal Cetak
-                isModalOpen: false,
-                cetakTipe: '',
-                cetakBulan: '',
-                cetakTahun: '',
-                cetakFormat: 'xlsx',
-
                 init() {
+                    this.$watch('searchQuery', () => {
+                        this.pagination.current_page = 1;
+                        this.loadData();
+                    });
+                    this.$watch('limit', () => {
+                        this.pagination.current_page = 1;
+                        this.loadData();
+                    });
                     this.loadData();
                 },
 
-                async loadData(page = 1) {
+                async loadData() {
                     this.listLoading = true;
                     try {
                         const params = new URLSearchParams({
-                            page: page,
+                            page: this.pagination.current_page,
                             tipe: this.filterTipe,
                             bulan: this.filterBulan,
                             tahun: this.filterTahun
                         });
+
+                        if (this.filterTipe === 'tahun' && this.filterTahun) {
+                            params.append('tahun', this.filterTahun);
+                        }
+                        if (this.searchQuery.trim()) {
+                            params.append('search', this.searchQuery.trim());
+                        }
+
+                        params.append('limit', this.limit);
 
                         const response = await fetch(`{{ route('riwayat-surat.data') }}?${params.toString()}`, {
                             headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
@@ -286,15 +326,6 @@
                         this.items = result.data || [];
                         this.pagination = result.pagination || this.pagination;
                         
-                        // Calculate from and to manually for display
-                        if (this.pagination.total > 0) {
-                            this.pagination.from = (this.pagination.current_page - 1) * this.pagination.per_page + 1;
-                            this.pagination.to = Math.min(this.pagination.current_page * this.pagination.per_page, this.pagination.total);
-                        } else {
-                            this.pagination.from = 0;
-                            this.pagination.to = 0;
-                        }
-
                     } catch (error) {
                         console.error(error);
                         alert('Gagal memuat riwayat: ' + error.message);
@@ -304,13 +335,16 @@
                 },
 
                 getCounter(index) {
-                    return (this.pagination.current_page - 1) * this.pagination.per_page + index + 1;
+                    return (this.pagination.current_page - 1) * parseInt(this.limit) + index + 1;
                 },
 
                 changePage(page) {
-                    if (page >= 1 && page <= this.pagination.last_page) {
-                        this.loadData(page);
-                    }
+                    page = parseInt(page);
+                    if (isNaN(page) || page < 1) page = 1;
+                    if (page > this.pagination.last_page) page = this.pagination.last_page;
+                    
+                    this.pagination.current_page = page;
+                    this.loadData();
                 },
 
                 onFilterTipeChange() {
@@ -318,7 +352,7 @@
                     this.filterBulan = '';
                     this.filterTahun = '';
                     if (this.filterTipe === '') {
-                        this.loadData(1);
+                        this.loadData();
                     }
                 },
 
@@ -331,7 +365,8 @@
                         alert('Silakan pilih tahun');
                         return;
                     }
-                    this.loadData(1);
+                    this.pagination.current_page = 1;
+                    this.loadData();
                 },
 
                 resetFilter() {

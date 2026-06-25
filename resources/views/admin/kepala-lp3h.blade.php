@@ -7,42 +7,54 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
-    <div x-data="kepalaManager()">
+    <div x-data="kepalaManager()" x-init="init()">
         
         <div class="mb-6">
             <h2 class="text-2xl font-bold text-brand">Data Kepala LP3H</h2>
             <p class="text-sm text-gray-500 mt-1">Kelola informasi profil dan tanda tangan digital Kepala Lembaga.</p>
         </div>
 
-        <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden max-w-3xl">
-            <div class="p-6 sm:p-8 space-y-6">
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden max-w-3xl relative">
+            
+            <div x-show="isLoading" class="absolute inset-0 bg-white bg-opacity-75 z-10 flex items-center justify-center">
+                <span class="text-gray-500 font-medium">Memuat data...</span>
+            </div>
+
+            <div class="p-6 sm:p-8 space-y-6" x-show="!isLoading">
                 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-sm">
                     
                     <div class="font-bold text-gray-600 sm:text-right">NIP</div>
                     <div class="sm:col-span-2 font-medium text-gray-900 flex items-start gap-2">
                         <span class="hidden sm:inline">:</span>
-                        <span x-text="dataAsli.nip"></span>
+                        <span x-text="dataAsli.nip || '-'"></span>
                     </div>
 
                     <div class="font-bold text-gray-600 sm:text-right">Nama</div>
                     <div class="sm:col-span-2 font-medium text-gray-900 flex items-start gap-2">
                         <span class="hidden sm:inline">:</span>
-                        <span x-text="dataAsli.nama"></span>
+                        <span x-text="dataAsli.nama || '-'"></span>
                     </div>
 
                     <div class="font-bold text-gray-600 sm:text-right">Jabatan</div>
                     <div class="sm:col-span-2 font-medium text-gray-900 flex items-start gap-2">
                         <span class="hidden sm:inline">:</span>
-                        <span x-text="dataAsli.jabatan"></span>
+                        <span x-text="dataAsli.jabatan || '-'"></span>
                     </div>
 
                     <div class="font-bold text-gray-600 sm:text-right">Tanda Tangan Digital / Barcode</div>
                     <div class="sm:col-span-2 font-medium text-gray-900 flex items-start gap-2">
                         <span class="hidden sm:inline">:</span>
                         <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
-                            <span class="text-brand font-mono bg-purple-50 px-2 py-0.5 rounded border border-purple-100" x-text="dataAsli.ttd_name"></span>
+                            <template x-if="dataAsli.barcode_ttd">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                                    <a :href="dataAsli.ttd_url" target="_blank" class="text-brand font-mono bg-purple-50 px-2 py-0.5 rounded border border-purple-100 hover:underline" x-text="dataAsli.barcode_ttd"></a>
+                                </div>
+                            </template>
+                            <template x-if="!dataAsli.barcode_ttd">
+                                <span class="text-gray-400 italic">Belum ada file diunggah</span>
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -61,7 +73,7 @@
 
 
         <div x-show="isEditModalOpen" style="display: none;" class="fixed inset-0 z-40 bg-gray-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300">
-            <div @click.away="closeEditModal()" class="bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[95vh] overflow-hidden">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[95vh] overflow-hidden">
                 
                 <div class="px-6 py-4 border-b border-gray-200 flex justify-between bg-gray-50">
                     <h3 class="text-lg font-bold text-gray-900">Edit Data Kepala LP3H</h3>
@@ -71,7 +83,6 @@
                 </div>
                 
                 <form action="#" method="POST" class="flex flex-col flex-1 overflow-hidden" @submit.prevent="submitForm">
-                    @csrf
                     <div class="p-6 overflow-y-auto flex-1 max-h-[70vh] bg-gray-50/50 space-y-5">
                         
                         <div>
@@ -99,9 +110,9 @@
                             <label class="block mb-2 text-sm font-semibold text-gray-900">Tanda Tangan Digital / Barcode (1:1)</label>
                             
                             <div class="mt-1 flex items-center gap-4">
-                                <div class="w-16 h-16 rounded border border-gray-300 bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                <div class="w-16 h-16 rounded border border-gray-300 bg-white flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm p-1">
                                     <template x-if="formData.ttd_preview">
-                                        <img :src="formData.ttd_preview" class="w-full h-full object-cover">
+                                        <img :src="formData.ttd_preview" class="w-full h-full object-contain">
                                     </template>
                                     <template x-if="!formData.ttd_preview">
                                         <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -126,8 +137,8 @@
                         <button type="button" @click="closeEditModal()" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
                             Batalkan
                         </button>
-                        <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-brand rounded-lg hover:bg-brand-dark shadow-sm transition-colors">
-                            Simpan
+                        <button type="submit" :disabled="isSubmitting" class="px-5 py-2.5 text-sm font-medium text-white bg-brand rounded-lg hover:bg-brand-dark shadow-sm transition-colors disabled:opacity-50">
+                            <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan'"></span>
                         </button>
                     </div>
                 </form>
@@ -167,18 +178,20 @@
     <script>
         function kepalaManager() {
             return {
+                isLoading: false,
+                isSubmitting: false,
                 isEditModalOpen: false,
                 isCropModalOpen: false,
                 cropperInstance: null,
                 selectedFileName: '',
                 
-                // State Data Saat Ini (Database Mockup)
+                // State Data Saat Ini
                 dataAsli: {
-                    nip: '19750817 200501 1 003',
-                    nama: 'Dr. H. Ahmad Fulan, M.Ag',
-                    jabatan: 'Ketua Lembaga Pendamping Proses Produk Halal',
-                    ttd_name: 'barcode_ahmad_fulan.png',
-                    ttd_preview: null // Biasanya URL gambar asli dari backend
+                    nip: '',
+                    nama: '',
+                    jabatan: '',
+                    barcode_ttd: '',
+                    ttd_url: null 
                 },
 
                 // State Form yang Sedang Diedit
@@ -190,9 +203,49 @@
                     ttd_preview: null
                 },
 
-                // Membuka form Edit dan menyalin data asli
+                init() {
+                    this.loadData();
+                },
+
+                csrfHeaders() {
+                    return {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    };
+                },
+
+                async loadData() {
+                    this.isLoading = true;
+                    try {
+                        const response = await fetch('{{ route("kepala-lp3h.data") }}', {
+                            headers: this.csrfHeaders()
+                        });
+                        const result = await response.json();
+                        
+                        if (result.success && result.data) {
+                            this.dataAsli = {
+                                nip: result.data.nip,
+                                nama: result.data.nama,
+                                jabatan: result.data.jabatan,
+                                barcode_ttd: result.data.barcode_ttd,
+                                ttd_url: result.data.ttd_url
+                            };
+                        }
+                    } catch (error) {
+                        console.error('Error fetching data:', error);
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+
                 openEditModal() {
-                    this.formData = { ...this.dataAsli };
+                    this.formData.nip = this.dataAsli.nip || '';
+                    this.formData.nama = this.dataAsli.nama || '';
+                    this.formData.jabatan = this.dataAsli.jabatan || '';
+                    this.formData.ttd_name = this.dataAsli.barcode_ttd || '';
+                    this.formData.ttd_preview = this.dataAsli.ttd_url || null;
+                    
                     this.isEditModalOpen = true;
                     document.body.style.overflow = 'hidden';
                 },
@@ -204,7 +257,6 @@
                     document.getElementById('fileUpload').value = ''; 
                 },
 
-                // Logic Saat File Gambar Dipilih
                 handleFileSelect(event) {
                     const file = event.target.files[0];
                     if (!file) return;
@@ -213,25 +265,31 @@
                     
                     const reader = new FileReader();
                     reader.onload = (e) => {
-                        // Setel src gambar untuk cropper
-                        this.$refs.imageToCrop.src = e.target.result;
-                        
-                        // Buka modal Cropper
+                        // Buka modal Cropper dulu agar div-nya tampil
                         this.isCropModalOpen = true;
                         
-                        // Inisialisasi Cropper.js setelah DOM siap (nextTick)
-                        this.$nextTick(() => {
-                            if (this.cropperInstance) {
-                                this.cropperInstance.destroy();
-                            }
-                            
-                            this.cropperInstance = new Cropper(this.$refs.imageToCrop, {
-                                aspectRatio: 1 / 1, // Kunci rasio 1:1 (Persegi)
-                                viewMode: 1, // Membatasi area crop tidak melebihi ukuran gambar asli
-                                background: false,
-                                autoCropArea: 0.8,
-                            });
-                        });
+                        const img = this.$refs.imageToCrop;
+                        
+                        // Tunggu gambar selesai dimuat oleh browser
+                        img.onload = () => {
+                            // Beri sedikit jeda agar animasi transisi Alpine selesai (modal fully visible)
+                            setTimeout(() => {
+                                if (this.cropperInstance) {
+                                    this.cropperInstance.destroy();
+                                }
+                                
+                                this.cropperInstance = new Cropper(img, {
+                                    aspectRatio: 1 / 1, // Kunci rasio 1:1 (Persegi)
+                                    viewMode: 1, // Membatasi area crop tidak melebihi ukuran gambar asli
+                                    background: false,
+                                    autoCropArea: 0.8,
+                                    responsive: true,
+                                });
+                            }, 150); // 150ms cukup untuk memastikan elemen sudah dirender penuh
+                        };
+                        
+                        // Setel src setelah event handler onload dipasang
+                        img.src = e.target.result;
                     };
                     reader.readAsDataURL(file);
                 },
@@ -249,9 +307,9 @@
                 confirmCrop() {
                     if (!this.cropperInstance) return;
 
-                    // Mengambil hasil crop ke dalam bentuk Base64 Data URL (bisa dikirim ke backend/preview)
+                    // Mengambil hasil crop ke dalam bentuk Base64 Data URL
                     const canvas = this.cropperInstance.getCroppedCanvas({
-                        width: 500, // Standar resolusi output (opsional, bisa dihapus agar native)
+                        width: 500, // Standar resolusi output
                         height: 500,
                     });
                     
@@ -265,15 +323,48 @@
                     this.closeCropModal();
                 },
 
-                submitForm() {
-                    // Logic untuk menyimpan perubahan data ke backend (API/Form Post)
-                    // Di sini kita update tampilan dataAsli agar langsung terlihat perubahannya
-                    this.dataAsli = { ...this.formData };
-                    
-                    console.log('Data Disimpan:', this.dataAsli);
-                    // (Catatan: formData.ttd_preview berisi base64 string dari gambar yang di crop)
+                async submitForm() {
+                    this.isSubmitting = true;
 
-                    this.closeEditModal();
+                    try {
+                        // Post form data to API
+                        const payload = {
+                            nip: this.formData.nip,
+                            nama: this.formData.nama,
+                            jabatan: this.formData.jabatan,
+                            ttd_name: this.formData.ttd_name,
+                        };
+
+                        // Send image base64 if a NEW image was cropped (base64 string starts with data:image)
+                        if (this.formData.ttd_preview && this.formData.ttd_preview.startsWith('data:image')) {
+                            payload.ttd_preview = this.formData.ttd_preview;
+                        }
+
+                        const response = await fetch('{{ route("kepala-lp3h.update") }}', {
+                            method: 'POST',
+                            headers: {
+                                ...this.csrfHeaders(),
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(payload)
+                        });
+
+                        const result = await response.json();
+
+                        if (!response.ok || !result.success) {
+                            throw new Error(result.message || 'Gagal menyimpan data.');
+                        }
+
+                        // Success
+                        alert(result.message);
+                        this.loadData();
+                        this.closeEditModal();
+
+                    } catch (error) {
+                        alert('Error: ' + error.message);
+                    } finally {
+                        this.isSubmitting = false;
+                    }
                 }
             }
         }

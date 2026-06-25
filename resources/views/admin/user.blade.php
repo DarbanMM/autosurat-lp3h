@@ -47,6 +47,8 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     Tambah User
                 </button>
+                
+                <input type="text" x-model.debounce.500ms="searchQuery" placeholder="Cari username atau role..." class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand focus:border-transparent shadow-sm transition-all w-64" />
             </div>
         </div>
 
@@ -66,12 +68,12 @@
                         <tr x-show="listLoading">
                             <td colspan="5" class="px-6 py-8 text-center text-gray-500">Memuat data...</td>
                         </tr>
-                        <tr x-show="!listLoading && sortedUsers.length === 0">
+                        <tr x-show="!listLoading && users.length === 0">
                             <td colspan="5" class="px-6 py-8 text-center text-gray-500">Belum ada data user. Gunakan Sinkronisasi atau tambah user baru.</td>
                         </tr>
-                        <template x-for="(user, index) in sortedUsers" :key="user.id">
+                        <template x-for="(user, index) in users" :key="user.id">
                             <tr class="hover:bg-gray-50 transition-colors bg-white">
-                                <td class="px-6 py-4 text-center font-medium text-gray-900" x-text="index + 1"></td>
+                                <td class="px-6 py-4 text-center font-medium text-gray-900" x-text="(pagination.current_page - 1) * limit + index + 1"></td>
                                 
                                 <td class="px-6 py-4 font-semibold text-gray-800" x-text="user.username"></td>
                                 
@@ -105,6 +107,46 @@
                         </template>
                     </tbody>
                 </table>
+            </div>
+            
+            <!-- Pagination Section -->
+            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row items-center justify-end gap-5 text-sm text-gray-600">
+                
+                <!-- Jumlah Data -->
+                <div class="font-medium">
+                    Jumlah Data (<span x-text="pagination.total"></span> Data)
+                </div>
+
+                <!-- Rows per page -->
+                <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-lg shadow-sm px-2 py-1">
+                    <select x-model="limit" class="bg-transparent text-gray-700 text-sm font-medium focus:ring-0 outline-none cursor-pointer py-1">
+                        <option value="10">10 baris</option>
+                        <option value="100">100 baris</option>
+                        <option value="1000">1000 baris</option>
+                    </select>
+                </div>
+
+                <!-- Pagination Controls -->
+                <div class="flex items-center gap-3">
+                    <button @click="changePage(pagination.current_page - 1)" :disabled="pagination.current_page <= 1" class="p-1.5 rounded-lg border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 hover:text-brand disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    
+                    <span class="font-medium flex items-center gap-2">
+                        Page 
+                        <input type="number" 
+                               x-model.lazy="pagination.current_page" 
+                               @change="changePage(pagination.current_page)"
+                               class="bg-gray-800 text-white px-2 py-1 rounded shadow-inner text-sm font-bold w-14 text-center focus:ring-2 focus:ring-brand outline-none appearance-none" 
+                               min="1" 
+                               :max="pagination.last_page">
+                        of <span x-text="pagination.last_page"></span>
+                    </span>
+                    
+                    <button @click="changePage(pagination.current_page + 1)" :disabled="pagination.current_page >= pagination.last_page" class="p-1.5 rounded-lg border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 hover:text-brand disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -247,7 +289,16 @@
                 importLoading: false,
                 importProgress: 0,
                 importStatusText: '',
+                importStatusText: '',
                 importDetailText: '',
+
+                searchQuery: '',
+                limit: 100,
+                pagination: {
+                    current_page: 1,
+                    last_page: 1,
+                    total: 0
+                },
 
                 formData: {
                     id: '',
@@ -259,22 +310,15 @@
 
                 users: [],
 
-                get sortedUsers() {
-                    return [...this.users].sort((a, b) => {
-                        // 1. Admin first
-                        if (a.role !== b.role) {
-                            return a.role === 'admin' ? -1 : 1; 
-                        }
-                        // 2. Belum di-assign first
-                        if (a.has_password !== b.has_password) {
-                            return a.has_password ? 1 : -1;
-                        }
-                        // 3. Username alphabetical
-                        return a.username.localeCompare(b.username);
-                    });
-                },
-
                 init() {
+                    this.$watch('searchQuery', () => {
+                        this.pagination.current_page = 1;
+                        this.loadUsers();
+                    });
+                    this.$watch('limit', () => {
+                        this.pagination.current_page = 1;
+                        this.loadUsers();
+                    });
                     this.loadUsers();
                 },
 
@@ -294,18 +338,33 @@
                 async loadUsers() {
                     this.listLoading = true;
                     try {
-                        const response = await fetch('{{ route("user.data") }}', {
+                        const params = new URLSearchParams({
+                            search: this.searchQuery,
+                            limit: this.limit,
+                            page: this.pagination.current_page
+                        });
+                        const response = await fetch(`{{ route("user.data") }}?${params.toString()}`, {
                             headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                         });
                         if (!response.ok) throw new Error('Gagal memuat data user.');
                         const result = await response.json();
                         this.users = result.data || [];
+                        this.pagination = result.pagination || { current_page: 1, last_page: 1, total: 0 };
                     } catch (error) {
                         console.error(error);
                         alert('Gagal memuat daftar user: ' + error.message);
                     } finally {
                         this.listLoading = false;
                     }
+                },
+                
+                changePage(page) {
+                    page = parseInt(page);
+                    if (isNaN(page) || page < 1) page = 1;
+                    if (page > this.pagination.last_page) page = this.pagination.last_page;
+                    
+                    this.pagination.current_page = page;
+                    this.loadUsers();
                 },
 
                 openModal(type, mode = 'add', userData = null) {
