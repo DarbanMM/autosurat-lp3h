@@ -5,7 +5,7 @@
 @section('content')
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <div x-data="riwayatSurat()">
+    <div x-data="riwayatSurat()" x-init="init()">
         
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
             <div>
@@ -24,7 +24,7 @@
                 
                 <div class="w-full sm:w-48">
                     <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Filter Rentang Waktu</label>
-                    <select x-model="filterTipe" class="w-full text-sm border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-brand p-2.5 bg-gray-50 outline-none transition-colors">
+                    <select x-model="filterTipe" @change="onFilterTipeChange" class="w-full text-sm border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-brand p-2.5 bg-gray-50 outline-none transition-colors">
                         <option value="">Semua Waktu</option>
                         <option value="minggu">Minggu Ini</option>
                         <option value="bulan">Bulan Tertentu</option>
@@ -62,8 +62,14 @@
                 </div>
 
                 <div x-show="filterTipe !== ''" x-transition>
-                    <button class="bg-gray-800 hover:bg-gray-900 text-white font-medium py-2.5 px-5 rounded-lg text-sm transition-colors shadow-sm">
+                    <button @click="applyFilter()" class="bg-gray-800 hover:bg-gray-900 text-white font-medium py-2.5 px-5 rounded-lg text-sm transition-colors shadow-sm focus:ring-4 focus:ring-gray-300">
                         Terapkan
+                    </button>
+                </div>
+
+                <div x-show="filterTipe !== ''" x-transition>
+                    <button @click="resetFilter()" class="bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-medium py-2.5 px-5 rounded-lg text-sm transition-colors shadow-sm focus:ring-4 focus:ring-gray-200">
+                        Reset
                     </button>
                 </div>
 
@@ -84,59 +90,40 @@
                     </thead>
                     <tbody class="divide-y divide-gray-200 align-top">
                         
-                        <tr class="hover:bg-gray-50 transition-colors bg-white">
-                            <td class="px-6 py-4 text-center font-medium text-gray-900">1</td>
-                            <td class="px-6 py-4 font-semibold text-gray-700">29 Mei 2026<br><span class="text-xs text-gray-400 font-normal">14:30 WIB</span></td>
-                            <td class="px-6 py-4 font-semibold text-gray-800">Surat Pengantar Kegiatan P3H</td>
-                            <td class="px-6 py-4">
-                                <span class="bg-purple-100 text-brand text-xs font-semibold px-2.5 py-1.5 rounded-md border border-purple-200 whitespace-nowrap">
-                                    024/LP3H/SU/2026
-                                </span>
-                            </td>
-                            <td class="px-6 py-4">
-                                <ul class="text-xs text-gray-700 space-y-1">
-                                    <li><span class="font-bold text-gray-900">Nama:</span> Nuryanto</li>
-                                    <li><span class="font-bold text-gray-900">Keperluan:</span> Pendaftaran menjadi pendamping halal</li>
-                                    <li><span class="font-bold text-gray-900">Ketua LP3H:</span> Ida Bagus, S.Pd (918273498)</li>
-                                </ul>
-                            </td>
+                        <tr x-show="listLoading">
+                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">Memuat data...</td>
+                        </tr>
+                        
+                        <tr x-show="!listLoading && items.length === 0">
+                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">Tidak ada riwayat surat.</td>
                         </tr>
 
-                        <tr class="hover:bg-gray-50 transition-colors bg-white">
-                            <td class="px-6 py-4 text-center font-medium text-gray-900">2</td>
-                            <td class="px-6 py-4 font-semibold text-gray-700">25 Mei 2026<br><span class="text-xs text-gray-400 font-normal">09:15 WIB</span></td>
-                            <td class="px-6 py-4 font-semibold text-gray-800">Surat Tugas Pendampingan Lapangan</td>
-                            <td class="px-6 py-4">
-                                <span class="bg-purple-100 text-brand text-xs font-semibold px-2.5 py-1.5 rounded-md border border-purple-200 whitespace-nowrap">
-                                    018/LP3H/ST/2026
-                                </span>
-                            </td>
-                            <td class="px-6 py-4">
-                                <ul class="text-xs text-gray-700 space-y-1">
-                                    <li><span class="font-bold text-gray-900">Nama Petugas:</span> Siti Aminah</li>
-                                    <li><span class="font-bold text-gray-900">Lokasi Tujuan:</span> PT. Makmur Jaya Abadi</li>
-                                    <li><span class="font-bold text-gray-900">Tanggal Tugas:</span> 26 Mei - 28 Mei 2026</li>
-                                </ul>
-                            </td>
-                        </tr>
-
-                        <tr class="hover:bg-gray-50 transition-colors bg-white">
-                            <td class="px-6 py-4 text-center font-medium text-gray-900">3</td>
-                            <td class="px-6 py-4 font-semibold text-gray-700">12 Mei 2026<br><span class="text-xs text-gray-400 font-normal">10:00 WIB</span></td>
-                            <td class="px-6 py-4 font-semibold text-gray-800">Surat Keterangan Pendampingan (SK P3H)</td>
-                            <td class="px-6 py-4">
-                                <span class="bg-purple-100 text-brand text-xs font-semibold px-2.5 py-1.5 rounded-md border border-purple-200 whitespace-nowrap">
-                                    045/LP3H/SK/2026
-                                </span>
-                            </td>
-                            <td class="px-6 py-4">
-                                <ul class="text-xs text-gray-700 space-y-1">
-                                    <li><span class="font-bold text-gray-900">Nama Pelaku Usaha:</span> Budi Santoso</li>
-                                    <li><span class="font-bold text-gray-900">Nama Usaha:</span> Keripik Singkong Renyah</li>
-                                    <li><span class="font-bold text-gray-900">Nomor NIB:</span> 1234567890123</li>
-                                </ul>
-                            </td>
-                        </tr>
+                        <template x-for="(item, index) in items" :key="item.id_riwayat">
+                            <tr class="hover:bg-gray-50 transition-colors bg-white">
+                                <td class="px-6 py-4 text-center font-medium text-gray-900" x-text="getCounter(index)"></td>
+                                <td class="px-6 py-4 font-semibold text-gray-700">
+                                    <span x-text="formatDate(item.tgl_dibuat)"></span><br>
+                                    <span class="text-xs text-gray-400 font-normal" x-text="formatTime(item.tgl_dibuat)"></span>
+                                </td>
+                                <td class="px-6 py-4 font-semibold text-gray-800" x-text="item.nama_surat || '-'"></td>
+                                <td class="px-6 py-4">
+                                    <span class="bg-purple-100 text-brand text-xs font-semibold px-2.5 py-1.5 rounded-md border border-purple-200 whitespace-nowrap" x-text="item.nomor_surat || '-'">
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <ul class="text-xs text-gray-700 space-y-1">
+                                        <template x-if="item.keterangan && typeof item.keterangan === 'object'">
+                                            <template x-for="[key, val] in Object.entries(item.keterangan)" :key="key">
+                                                <li><span class="font-bold text-gray-900" x-text="key + ':'"></span> <span x-text="val"></span></li>
+                                            </template>
+                                        </template>
+                                        <template x-if="!item.keterangan || typeof item.keterangan !== 'object'">
+                                            <li><span x-text="item.keterangan || '-'"></span></li>
+                                        </template>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </template>
 
                     </tbody>
                 </table>
@@ -144,14 +131,14 @@
 
             <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <span class="text-sm text-gray-700">
-                    Menampilkan <span class="font-semibold text-gray-900">1</span> hingga <span class="font-semibold text-gray-900">3</span> dari <span class="font-semibold text-gray-900">452</span> entri (Max 100/Page)
+                    Menampilkan <span class="font-semibold text-gray-900" x-text="pagination.from || 0"></span> hingga <span class="font-semibold text-gray-900" x-text="pagination.to || 0"></span> dari <span class="font-semibold text-gray-900" x-text="pagination.total"></span> entri (Max 100/Page)
                 </span>
-                <div class="inline-flex mt-2 xs:mt-0 shadow-sm rounded-md">
-                    <button class="flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 transition-colors">
+                <div class="inline-flex mt-2 xs:mt-0 shadow-sm rounded-md" x-show="pagination.last_page > 1">
+                    <button @click="changePage(pagination.current_page - 1)" :disabled="pagination.current_page <= 1" class="flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                         <svg class="w-4 h-4 me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         Prev
                     </button>
-                    <button class="flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 border-s-0 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 transition-colors">
+                    <button @click="changePage(pagination.current_page + 1)" :disabled="pagination.current_page >= pagination.last_page" class="flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 border-s-0 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                         Next
                         <svg class="w-4 h-4 ms-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </button>
@@ -175,7 +162,6 @@
                 </div>
                 
                 <form action="#" method="POST" @submit.prevent="cetakRiwayat()">
-                    @csrf
                     <div class="p-6 space-y-5">
                         
                         <div>
@@ -190,7 +176,7 @@
 
                         <div x-show="cetakTipe === 'bulan'" x-transition>
                             <label class="block mb-2 text-sm font-bold text-gray-900">Bulan</label>
-                            <select x-model="cetakBulan" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-brand block w-full p-3 outline-none transition-all appearance-none">
+                            <select x-model="cetakBulan" :required="cetakTipe === 'bulan'" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-brand block w-full p-3 outline-none transition-all appearance-none">
                                 <option value="" disabled selected>Pilih Bulan...</option>
                                 <option value="1">Januari</option>
                                 <option value="2">Februari</option>
@@ -209,7 +195,7 @@
 
                         <div x-show="cetakTipe === 'bulan' || cetakTipe === 'tahun'" x-transition>
                             <label class="block mb-2 text-sm font-bold text-gray-900">Tahun</label>
-                            <select x-model="cetakTahun" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-brand block w-full p-3 outline-none transition-all appearance-none">
+                            <select x-model="cetakTahun" :required="cetakTipe === 'bulan' || cetakTipe === 'tahun'" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-brand block w-full p-3 outline-none transition-all appearance-none">
                                 <option value="" disabled selected>Pilih Tahun...</option>
                                 <option value="2026">2026</option>
                                 <option value="2025">2025</option>
@@ -220,6 +206,16 @@
                         <div x-show="cetakTipe === 'minggu'" class="bg-blue-50 text-blue-800 p-3 rounded-lg text-xs font-medium border border-blue-100 flex items-start gap-2">
                             <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Sistem akan mencetak data riwayat surat yang keluar selama 7 hari terakhir dari hari ini secara otomatis.
+                        </div>
+
+                        <div>
+                            <label class="block mb-2 text-sm font-bold text-gray-900">Format Cetak</label>
+                            <select x-model="cetakFormat" required class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-brand block w-full p-3 outline-none transition-all appearance-none">
+                                <option value="" disabled selected>Pilih format...</option>
+                                <option value="xlsx">Excel (.xlsx)</option>
+                                <option value="csv">CSV (.csv)</option>
+                                <option value="pdf">PDF (.pdf)</option>
+                            </select>
                         </div>
 
                     </div>
@@ -242,6 +238,18 @@
     <script>
         function riwayatSurat() {
             return {
+                // List State
+                items: [],
+                listLoading: false,
+                pagination: {
+                    current_page: 1,
+                    last_page: 1,
+                    per_page: 100,
+                    total: 0,
+                    from: 0,
+                    to: 0
+                },
+
                 // State untuk Filter di Halaman
                 filterTipe: '',
                 filterBulan: '',
@@ -252,6 +260,103 @@
                 cetakTipe: '',
                 cetakBulan: '',
                 cetakTahun: '',
+                cetakFormat: 'xlsx',
+
+                init() {
+                    this.loadData();
+                },
+
+                async loadData(page = 1) {
+                    this.listLoading = true;
+                    try {
+                        const params = new URLSearchParams({
+                            page: page,
+                            tipe: this.filterTipe,
+                            bulan: this.filterBulan,
+                            tahun: this.filterTahun
+                        });
+
+                        const response = await fetch(`{{ route('riwayat-surat.data') }}?${params.toString()}`, {
+                            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                        });
+
+                        if (!response.ok) throw new Error('Gagal memuat data');
+                        
+                        const result = await response.json();
+                        this.items = result.data || [];
+                        this.pagination = result.pagination || this.pagination;
+                        
+                        // Calculate from and to manually for display
+                        if (this.pagination.total > 0) {
+                            this.pagination.from = (this.pagination.current_page - 1) * this.pagination.per_page + 1;
+                            this.pagination.to = Math.min(this.pagination.current_page * this.pagination.per_page, this.pagination.total);
+                        } else {
+                            this.pagination.from = 0;
+                            this.pagination.to = 0;
+                        }
+
+                    } catch (error) {
+                        console.error(error);
+                        alert('Gagal memuat riwayat: ' + error.message);
+                    } finally {
+                        this.listLoading = false;
+                    }
+                },
+
+                getCounter(index) {
+                    return (this.pagination.current_page - 1) * this.pagination.per_page + index + 1;
+                },
+
+                changePage(page) {
+                    if (page >= 1 && page <= this.pagination.last_page) {
+                        this.loadData(page);
+                    }
+                },
+
+                onFilterTipeChange() {
+                    // Just reset the dropdowns but don't automatically load, user must click 'Terapkan'
+                    this.filterBulan = '';
+                    this.filterTahun = '';
+                    if (this.filterTipe === '') {
+                        this.loadData(1);
+                    }
+                },
+
+                applyFilter() {
+                    if (this.filterTipe === 'bulan' && (!this.filterBulan || !this.filterTahun)) {
+                        alert('Silakan pilih bulan dan tahun');
+                        return;
+                    }
+                    if (this.filterTipe === 'tahun' && !this.filterTahun) {
+                        alert('Silakan pilih tahun');
+                        return;
+                    }
+                    this.loadData(1);
+                },
+
+                resetFilter() {
+                    this.filterTipe = '';
+                    this.filterBulan = '';
+                    this.filterTahun = '';
+                    this.loadData(1);
+                },
+
+                formatDate(dateString) {
+                    if (!dateString) return '-';
+                    const d = new Date(dateString);
+                    if (isNaN(d.getTime())) return dateString;
+                    const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+                    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+                },
+
+                formatTime(dateString) {
+                    if (!dateString) return '';
+                    const d = new Date(dateString);
+                    if (isNaN(d.getTime())) return '';
+                    const h = String(d.getHours()).padStart(2, '0');
+                    const m = String(d.getMinutes()).padStart(2, '0');
+                    return `${h}:${m} WIB`;
+                },
 
                 // Logic Modal
                 openModal() {
@@ -260,6 +365,7 @@
                     this.cetakTipe = '';
                     this.cetakBulan = '';
                     this.cetakTahun = '';
+                    this.cetakFormat = 'xlsx';
                     document.body.style.overflow = 'hidden'; // Mengunci scroll background
                 },
 
@@ -269,12 +375,29 @@
                 },
 
                 cetakRiwayat() {
-                    // Di sini nanti Laravel bisa melakukan submit/redirect ke fungsi Print/Export PDF
-                    console.log('Mencetak Riwayat...', {
+                    if (this.cetakTipe === 'bulan' && (!this.cetakBulan || !this.cetakTahun)) {
+                        alert('Silakan pilih bulan dan tahun');
+                        return;
+                    }
+                    if (this.cetakTipe === 'tahun' && !this.cetakTahun) {
+                        alert('Silakan pilih tahun');
+                        return;
+                    }
+                    if (!this.cetakFormat) {
+                        alert('Silakan pilih format cetak');
+                        return;
+                    }
+
+                    const params = new URLSearchParams({
                         tipe: this.cetakTipe,
                         bulan: this.cetakBulan,
-                        tahun: this.cetakTahun
+                        tahun: this.cetakTahun,
+                        format: this.cetakFormat
                     });
+
+                    // Redirect to the export route to trigger file download
+                    window.location.href = `{{ route('riwayat-surat.export') }}?${params.toString()}`;
+                    
                     this.closeModal();
                 }
             }

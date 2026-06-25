@@ -102,3 +102,9 @@ Route::get('/format-nomor-surat/data', [FormatNomorSuratController::class, 'inde
 Route::post('/format-nomor-surat/store', [FormatNomorSuratController::class, 'store'])->name('format-nomor-surat.store');
 Route::put('/format-nomor-surat/{id}', [FormatNomorSuratController::class, 'update'])->name('format-nomor-surat.update');
 Route::delete('/format-nomor-surat/{id}', [FormatNomorSuratController::class, 'destroy'])->name('format-nomor-surat.destroy');
+
+// Riwayat Surat API
+use App\Http\Controllers\RiwayatSuratController;
+
+Route::get('/riwayat-surat/data', [RiwayatSuratController::class, 'index'])->name('riwayat-surat.data');
+Route::get('/riwayat-surat/export', [RiwayatSuratController::class, 'export'])->name('riwayat-surat.export');
