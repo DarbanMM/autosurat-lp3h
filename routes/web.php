@@ -94,3 +94,11 @@ Route::post('/user/import/{importId}/chunk', [UserController::class, 'importChun
 Route::get('/user/import/{importId}/status', [UserController::class, 'importStatus'])->name('user.import.status');
 Route::get('/user/export/{format}', [UserController::class, 'export'])->name('user.export');
 Route::get('/user/download-template/{format}', [UserController::class, 'downloadTemplate'])->name('user.download-template');
+
+// Format Nomor Surat API
+use App\Http\Controllers\FormatNomorSuratController;
+
+Route::get('/format-nomor-surat/data', [FormatNomorSuratController::class, 'index'])->name('format-nomor-surat.data');
+Route::post('/format-nomor-surat/store', [FormatNomorSuratController::class, 'store'])->name('format-nomor-surat.store');
+Route::put('/format-nomor-surat/{id}', [FormatNomorSuratController::class, 'update'])->name('format-nomor-surat.update');
+Route::delete('/format-nomor-surat/{id}', [FormatNomorSuratController::class, 'destroy'])->name('format-nomor-surat.destroy');
