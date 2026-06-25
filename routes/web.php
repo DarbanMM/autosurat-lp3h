@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LetterController;
 use App\Http\Controllers\PendampingController;
+use App\Http\Controllers\DaftarSuratController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -17,7 +18,10 @@ Route::get('/login', function () {
 })->name('login');
 
 Route::get('/dashboard', function () {
-    return view('admin.dashboard');
+    $totalDaftarSurat = \App\Models\Surat::count();
+    $totalRiwayat = \App\Models\RiwayatSurat::count();
+    $totalUser = \App\Models\User::count();
+    return view('admin.dashboard', compact('totalDaftarSurat', 'totalRiwayat', 'totalUser'));
 })->name('dashboard');
 
 Route::get('/daftar-surat', function () {
@@ -82,6 +86,13 @@ Route::post('/pendamping/import/async', [PendampingController::class, 'startAsyn
 Route::get('/pendamping/import/{importId}/status', [PendampingController::class, 'importStatus'])->name('pendamping.import.status');
 Route::post('/pendamping/import', [PendampingController::class, 'import'])->name('pendamping.import');
 Route::get('/pendamping/download-template/{format}', [PendampingController::class, 'downloadTemplate'])->name('pendamping.download-template');
+
+// Daftar Surat
+Route::get('/daftar-surat/data', [DaftarSuratController::class, 'index'])->name('daftar-surat.data');
+Route::get('/daftar-surat/formats', [DaftarSuratController::class, 'formats'])->name('daftar-surat.formats');
+Route::post('/daftar-surat', [DaftarSuratController::class, 'store'])->name('daftar-surat.store');
+Route::put('/daftar-surat/{id}', [DaftarSuratController::class, 'update'])->name('daftar-surat.update');
+Route::delete('/daftar-surat/{id}', [DaftarSuratController::class, 'destroy'])->name('daftar-surat.destroy');
 
 // User API
 Route::get('/user/data', [UserController::class, 'index'])->name('user.data');

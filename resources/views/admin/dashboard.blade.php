@@ -22,7 +22,7 @@
                 </div>
                 <div class="ml-4">
                     <h3 class="text-gray-500 text-xs font-bold uppercase tracking-wider">Total Daftar Surat</h3>
-                    <span class="text-2xl font-black text-gray-800">45</span>
+                    <span class="text-2xl font-black text-gray-800">{{ $totalDaftarSurat }}</span>
                 </div>
             </div>
         </div>
@@ -34,7 +34,7 @@
                 </div>
                 <div class="ml-4">
                     <h3 class="text-gray-500 text-xs font-bold uppercase tracking-wider">Riwayat Keluar</h3>
-                    <span class="text-2xl font-black text-gray-800">128</span>
+                    <span class="text-2xl font-black text-gray-800">{{ $totalRiwayat }}</span>
                 </div>
             </div>
         </div>
@@ -46,7 +46,7 @@
                 </div>
                 <div class="ml-4">
                     <h3 class="text-gray-500 text-xs font-bold uppercase tracking-wider">Total User</h3>
-                    <span class="text-2xl font-black text-gray-800">12</span>
+                    <span class="text-2xl font-black text-gray-800">{{ $totalUser }}</span>
                 </div>
             </div>
         </div>
