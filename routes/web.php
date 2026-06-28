@@ -93,5 +93,11 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         $pendamping = \App\Models\Pendamping::where('no_registrasi', $user->username)->first();
         return view('user.profil', compact('pendamping'));
     })->name('profil');
-    Route::get('/buat-surat', function () { return view('user.buat-surat'); })->name('buat-surat');
+    Route::get('/buat-surat', function () { 
+        $surats = \App\Models\Surat::whereIn('id_surat', [1, 2, 3])->get()->keyBy('id_surat');
+        return view('user.buat-surat', compact('surats')); 
+    })->name('buat-surat');
+    Route::get('/buat-surat/sk-p3h/download', [LetterController::class, 'downloadSuratKeteranganP3H'])->name('buat-surat.sk-p3h');
+    Route::post('/buat-surat/pengantar/download', [LetterController::class, 'downloadSuratPengantar'])->name('buat-surat.pengantar');
+    Route::post('/buat-surat/tugas/download', [LetterController::class, 'downloadSuratTugas'])->name('buat-surat.tugas');
 });

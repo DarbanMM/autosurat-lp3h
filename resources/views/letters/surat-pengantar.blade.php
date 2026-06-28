@@ -12,17 +12,13 @@
         }
         body {
             font-family: "Times New Roman", serif;
-            background-color: #f0f0f0;
-            padding: 20px;
+            background-color: white;
+            padding: 15mm 25mm 25mm 25mm;
         }
         .a4-page {
-            width: 210mm;
-            min-height: 297mm;
-            padding: 15mm 25mm 25mm 25mm;
+            width: 100%;
             margin: 0 auto;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.10);
-            line-height: 1.6;
+            line-height: 1.4;
             font-size: 12pt;
             color: #000;
         }
@@ -55,7 +51,7 @@
             border: none; border-top: 3px solid #000; margin: 2px 0;
         }
         .meta {
-            margin-top: 14px;
+            margin-top: 8px;
             display:flex;
             justify-content: space-between;
             align-items: flex-start;
@@ -70,22 +66,24 @@
             margin: 2px 0;
         }
         .hal {
-            margin-top: 6px;
+            margin-top: 4px;
         }
         .kepada {
-            margin-top: 14px;
+            margin-top: 8px;
             margin-left: 40px;
         }
         .salutation {
-            margin-top: 12px;
+            margin-top: 8px;
             margin-left: 40px;
         }
         .isi {
-            margin-top: 12px;
+            margin-top: 8px;
             text-align: justify;
         }
         .data-table {
             margin-left: 40px;
+            margin-top: 4px;
+            margin-bottom: 4px;
         }
         .data-table td {
             padding: 0px 5px;
@@ -95,11 +93,11 @@
             text-indent: 5mm;
         }
         .closing {
-            margin-top: 12px;
+            margin-top: 8px;
             text-align: justify;
         }
         .ttd {
-            margin-top: 30px;
+            margin-top: 15px;
             text-align: right;
         }
         .ttd .place-time {
@@ -114,8 +112,16 @@
         .ttd .signer-id {
             margin-right: 40px;
         }
+        .ttd .qr-code {
+            width: 80px;
+            height: auto;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            margin-right: 70px;
+            display: inline-block;
+        }
         @media print {
-            body { background-color: #fff; padding: 0; }
+            body { padding: 0; }
             .a4-page {
                 box-shadow: none;
                 margin: 0;
@@ -143,16 +149,16 @@
 
         <div class="meta">
             <div class="left">
-                <p>Nomor : Z-178/LP3H-UINSK/X/2025</p>
-                <p class="hal">Hal : Surat Pengantar Pendampingan SEHATI 2025</p>
+                <p>Nomor : {{ $nomorSurat ?? 'Z-178/LP3H-UINSK/X/2025' }}</p>
+                <p class="hal">Hal : Surat Pengantar Pendampingan SEHATI {{ date('Y') }}</p>
             </div>
         </div>
 
         <div class="kepada">
             <p>Kepada Yth:</p>
-            <p>Bapak/Ibu Pemilik Dapur SPPG</p>
-            <p>Kabupaten Sragen</p>
-            <p style="margin-top:12px;">Di Tempat</p>
+            <p>Bapak/Ibu {{ $tujuan_kepada ?? 'Pemilik Dapur SPPG' }}</p>
+            <p>{{ $daerah ?? 'Kabupaten Sragen' }}</p>
+            <p style="margin-top:6px;">Di Tempat</p>
         </div>
 
         <div class="salutation">
@@ -161,10 +167,10 @@
 
         <div class="isi">
             <p class="indent">
-                Salam sejahtera, semoga Bapak/Ibu Pemilik Dapur SPPG selalu dalam lindungan Tuhan YME. Aamiin.
+                Salam sejahtera, semoga Bapak/Ibu {{ $tujuan_kepada ?? 'Pemilik Dapur SPPG' }} selalu dalam lindungan Tuhan YME. Aamiin.
             </p>
 
-            <p class="indent" style="margin-top:8px;">
+            <p class="indent" style="margin-top:4px;">
                 Berkaitan dengan Program Sertifikat Halal Gratis (SEHATI) sebanyak 1 Juta Pelaku Usaha Mikro Kecil (UMK) 
                 di Tahun 2025 sebagai Program Prioritas Pemerintah yang mengacu pada UU No. 33 Tahun 2014 tentang Jaminan Produk Halal 
                 dan Peraturan Pemerintah No. 39 Tahun 2021 tentang Penyelenggaraan Bidang Jaminan Produk Halal, 
@@ -175,12 +181,12 @@
                 <tr>
                     <td style="width:130px;">Nama</td>
                     <td style="width:10px;">:</td>
-                    <td>Sumantri. ST</td>
+                    <td>{{ $pendamping->nama ?? 'Sumantri. ST' }}</td>
                 </tr>
                 <tr>
                     <td>No Registrasi</td>
                     <td>:</td>
-                    <td>2205002019</td>
+                    <td>{{ $pendamping->no_registrasi ?? '2205002019' }}</td>
                 </tr>
                 <tr>
                     <td>Jabatan</td>
@@ -190,16 +196,16 @@
                 <tr>
                     <td>Alamat</td>
                     <td>:</td>
-                    <td>Jono RT 04 Jono, Tanon, Sragen, Jawa Tengah</td>
+                    <td>{{ $pendamping->alamat ?? 'Jono RT 04 Jono, Tanon, Sragen, Jawa Tengah' }}</td>
                 </tr>
                 <tr>
                     <td>No. Hp</td>
                     <td>:</td>
-                    <td>081228228874</td>
+                    <td>{{ $pendamping->no_hp ?? '081228228874' }}</td>
                 </tr>
             </table>
 
-            <p style="margin-top:10px;">
+            <p style="margin-top:4px;">
                 Agar dapat melaksanakan <strong>Sosialisasi dan Pendampingan Sertifikasi Halal</strong> di lingkungan yang Bapak/Ibu pimpin.
             </p>
 
@@ -207,17 +213,23 @@
                 <p style="text-indent: 5mm;">Demikian surat pengantar ini kami sampaikan, atas perhatian dan kerjasamanya disampaikan terimakasih</p>
             </div>
 
-            <div style="margin-top:10px;">
+            <div style="margin-top:4px;">
                 <p>Wassalamualaikum Warahmatullahi Wabarakatuh</p>
             </div>
         </div>
 
         <div class="ttd">
-            <p class="place-time">Yogyakarta, 07 Oktober 2025</p>
+            <p class="place-time">Yogyakarta, {{ $tanggal ?? '07 Oktober 2025' }}</p>
             <p class="position">Ketua LP3H UIN Sunan Kalijaga Yogyakarta,</p>
-            <br><br><br><br>
-            <p class="signer">Dr. Diky Faqih Maulana, M.H.</p>
-            <p class="signer-id">NIP. 199702100000001101</p>
+            
+            @if(isset($ttdBase64) && $ttdBase64)
+                <img src="{{ $ttdBase64 }}" class="qr-code" alt="QR Code TTD">
+            @else
+                <br><br><br><br>
+            @endif
+            
+            <p class="signer">{{ $ketua->nama ?? 'Dr. Diky Faqih Maulana, M.H.' }}</p>
+            <p class="signer-id">NIP. {{ $ketua->nip ?? '199702100000001101' }}</p>
         </div>
 
     </div>

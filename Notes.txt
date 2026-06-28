@@ -1,27 +1,28 @@
-What have to be prepared:
+Apa yang harus disiapkan sebelumnya:
 1. PHP 8.0
 2. Composer
 3. PostgreSQL
 
-start apps:
-Windows - Switch to LOCAL       = switch-db.bat local
-                                  docker-compose up -d
-Windows - Switch to SUPABASE    = switch-db.bat supabase
-                                  docker-compose up -d
-                                  docker-compose up -d queue   (for background import)
+Memulai pertama kali:
+1. composer install
+2. npm install
+3. switch-db.bat local (apabila menggunakan postgresql local)
+   ./switch-db.sh local (apabila command diatas tidak bekerja, biasanya di Mac/Linux)
+   switch-db.bat supabase (apabila menggunakan supabase)
+   ./switch-db.sh supabase (apabila command diatas tidak bekerja, biasanya di Mac/Linux)
+4. docker-compose up -d --build
+
+Memulai setelah yang pertama:
+Windows - Switch to LOCAL       = docker-compose up -d
+Windows - Switch to SUPABASE    = docker-compose up -d
+                                  docker-compose up -d queue (apabila ingin manual)
 
 Import besar via CLI:
   docker-compose exec app php artisan pendamping:import "database/CSV Data Pendamping.csv"
-Mac/Linux - Switch to LOCAL     = ./switch-db.sh local
-                                  docker-compose up -d
-Mac/Linux - Switch to SUPABASE  = ./switch-db.sh supabase
-                                  docker-compose up -d
 
-after that, run "npm run dev" for UI
+Cek status di docker: docker-compose ps
 
-Checking status for docker: docker-compose ps
-
-How to access for local: http://localhost
+Cara akses di local: http://localhost
 
 Admins Page	            URL
 Login	                  http://localhost/login

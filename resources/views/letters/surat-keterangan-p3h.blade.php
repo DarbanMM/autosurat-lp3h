@@ -11,16 +11,12 @@
         }
         body {
             font-family: "Times New Roman", serif;
-            background-color: #f0f0f0;
-            padding: 20px;
+            background-color: white;
+            padding: 15mm 25mm 25mm 25mm;
         }
         .a4-page {
-            width: 210mm;
-            min-height: 297mm;
-            padding: 15mm 25mm 25mm 25mm;
+            width: 100%;
             margin: 0 auto;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             line-height: 1.6;
             font-size: 12pt;
         }
@@ -98,15 +94,19 @@
         .ttd .signer-id {
             margin-right: 0px;
         }
+        .ttd .qr-code {
+            width: 80px;
+            height: auto;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            margin-right: 35px;
+            display: inline-block;
+        }
         @media print {
             body {
-                background-color: white;
                 padding: 0;
             }
             .a4-page {
-                width: 210mm;
-                min-height: 297mm;
-                margin: 0mm 229mm 49mm 229mm;
                 box-shadow: none;
             }
         }
@@ -132,7 +132,7 @@
 <div class="judul">
     <h4 style="border-bottom: 2px solid black; display: inline-block;">
     SURAT KETERANGAN </h4>
-    <p>No. K-01/HC-UINSK/III/2023</p>
+    <p>No. {{ $nomorSurat ?? 'K-01/HC-UINSK/III/2023' }}</p>
 </div>
 
 <div class="isi">
@@ -145,17 +145,17 @@
         <tr>
             <td>Nama</td>
             <td>:</td>
-            <td>Dr. Imelda Fajriati, M.Si</td>
+            <td>{{ $ketua->nama ?? 'Dr. Imelda Fajriati, M.Si' }}</td>
         </tr>
         <tr>
             <td>NIP</td>
             <td>:</td>
-            <td>197507252000032001</td>
+            <td>{{ $ketua->nip ?? '197507252000032001' }}</td>
         </tr>
         <tr>
             <td>Jabatan</td>
             <td>:</td>
-            <td>Ketua Lembaga Pendamping PPH / Halal Center UIN Sunan Kalijaga</td>
+            <td>{{ $ketua->jabatan ?? 'Ketua Lembaga Pendamping PPH / Halal Center UIN Sunan Kalijaga' }}</td>
         </tr>
     </table>
 
@@ -165,12 +165,12 @@
         <tr>
             <td>Nama</td>
             <td>:</td>
-            <td>Nurhidayah</td>
+            <td>{{ $pendamping->nama ?? 'Nurhidayah' }}</td>
         </tr>
         <tr>
             <td>No Registrasi</td>
             <td>:</td>
-            <td>2204001838</td>
+            <td>{{ $pendamping->no_registrasi ?? '2204001838' }}</td>
         </tr>
         <tr>
             <td>Jabatan</td>
@@ -180,12 +180,12 @@
         <tr>
             <td>Alamat</td>
             <td>:</td>
-            <td>Bulugede 01/01 Patebon, Kendal, Jawa Tengah</td>
+            <td>{{ $pendamping->alamat ?? 'Bulugede 01/01 Patebon, Kendal, Jawa Tengah' }}</td>
         </tr>
     </table>
 
     <p>
-        Telah mengundurkan diri mulai tanggal 17 Maret 2023 dari jabatannya sebagai anggota aktif 
+        Telah mengundurkan diri mulai tanggal {{ $tanggal ?? '17 Maret 2023' }} dari jabatannya sebagai anggota aktif 
         Pendamping PPH Halal Center UIN Sunan Kalijaga Yogyakarta.
     </p>
 
@@ -195,11 +195,17 @@
 </div>
 
 <div class="ttd">
-    <p class="place-time">Yogyakarta, 17 Maret 2022</p>
+    <p class="place-time">Yogyakarta, {{ $tanggal ?? '17 Maret 2022' }}</p>
     <p class="position">Ketua,</p>
-    <br><br><br><br>
-    <p class="signer">Dr. Imelda Fajriati, M.Si</p>
-    <p class="signer-id">NIP. 197507252000032001</p>
+    
+    @if(isset($ttdBase64) && $ttdBase64)
+        <img src="{{ $ttdBase64 }}" class="qr-code" alt="QR Code TTD">
+    @else
+        <br><br><br><br>
+    @endif
+    
+    <p class="signer">{{ $ketua->nama ?? 'Dr. Imelda Fajriati, M.Si' }}</p>
+    <p class="signer-id">NIP. {{ $ketua->nip ?? '197507252000032001' }}</p>
 </div>
 
 </div>

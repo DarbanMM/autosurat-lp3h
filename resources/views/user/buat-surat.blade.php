@@ -73,20 +73,21 @@
                     <p class="text-sm font-semibold text-gray-800">Silakan isi parameter keperluan di bawah ini untuk merender draf dokumen.</p>
                 </div>
 
-                <form @submit.prevent="prosesUnduhSurat()">
+                <form method="POST" :action="getFormAction()" x-ref="formKeperluan" @submit.prevent="prosesUnduhSurat()">
+                    @csrf
                     <div class="p-6 space-y-5 max-h-[60vh] overflow-y-auto">
                         
                         <template x-if="selectedLetterData?.slug === 'surat-pengantar'">
                             <div class="space-y-5 animate-fade-in">
                                 <div>
                                     <label class="block mb-2 text-sm font-semibold text-gray-900">Tujuan Kepada</label>
-                                    <input type="text" x-model="formKeperluan.tujuan_kepada" required
+                                    <input type="text" x-model="formKeperluan.tujuan_kepada" name="tujuan_kepada" required
                                         class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-[#670075] block w-full p-3 outline-none transition-all" 
                                         placeholder="Contoh: Kepala Dinas Perindustrian">
                                 </div>
                                 <div>
                                     <label class="block mb-2 text-sm font-semibold text-gray-900">Daerah / Wilayah Tujuan</label>
-                                    <input type="text" x-model="formKeperluan.daerah" required
+                                    <input type="text" x-model="formKeperluan.daerah" name="daerah" required
                                         class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-[#670075] block w-full p-3 outline-none transition-all" 
                                         placeholder="Contoh: Kota Yogyakarta">
                                 </div>
@@ -97,7 +98,7 @@
                             <div class="space-y-5 animate-fade-in">
                                 <div>
                                     <label class="block mb-2 text-sm font-semibold text-gray-900">Wilayah Penugasan</label>
-                                    <input type="text" x-model="formKeperluan.wilayah" required
+                                    <input type="text" x-model="formKeperluan.wilayah" name="wilayah" required
                                         class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-[#670075] block w-full p-3 outline-none transition-all" 
                                         placeholder="Contoh: Kecamatan Imogiri, Bantul">
                                 </div>
@@ -107,12 +108,12 @@
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <div>
                                             <span class="block text-xs font-medium text-gray-400 mb-1">Dari Tanggal</span>
-                                            <input type="date" x-model="formKeperluan.tanggal_mulai" required
+                                            <input type="date" x-model="formKeperluan.tanggal_mulai" name="tanggal_mulai" required
                                                 class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-[#670075] block w-full p-3 outline-none transition-all">
                                         </div>
                                         <div>
                                             <span class="block text-xs font-medium text-gray-400 mb-1">Sampai Tanggal</span>
-                                            <input type="date" x-model="formKeperluan.tanggal_selesai" required
+                                            <input type="date" x-model="formKeperluan.tanggal_selesai" name="tanggal_selesai" required
                                                 class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-[#670075] block w-full p-3 outline-none transition-all">
                                         </div>
                                     </div>
@@ -149,9 +150,9 @@
 
                 // List Master Data Jenis Surat
                 masterSurat: [
-                    { id: 1, slug: 'surat-keterangan-p3h', nama: 'Surat Keterangan Pendampingan (SK P3H)', inputManual: false },
-                    { id: 2, slug: 'surat-pengantar', nama: 'Surat Pengantar Kegiatan Instansi', inputManual: true },
-                    { id: 3, slug: 'surat-tugas', nama: 'Surat Tugas Pendampingan Lapangan', inputManual: true }
+                    { id: 1, slug: 'surat-keterangan-p3h', nama: '{{ $surats[1]->nama_surat ?? 'Surat Keterangan Pengunduran Diri P3H' }}', inputManual: false },
+                    { id: 2, slug: 'surat-pengantar', nama: '{{ $surats[2]->nama_surat ?? 'Surat Pengantar Pendampingan' }}', inputManual: true },
+                    { id: 3, slug: 'surat-tugas', nama: '{{ $surats[3]->nama_surat ?? 'Surat Tugas Pendampingan Lapangan' }}', inputManual: true }
                 ],
 
                 // Form State Model
@@ -181,8 +182,9 @@
                         this.currentView = 'keperluan';
                     } else {
                         // Khusus surat-keterangan-p3h: tidak perlu input, langsung unduh instan
-                        alert(`Memproses pembuatan dokumen instan:\n"${surat.nama}"\n\nSurat akan otomatis diunduh berdasarkan identitas Anda.`);
-                        // Di sini nantinya ditambahkan fungsi window.location.href ke endpoint download Laravel
+                        if (surat.slug === 'surat-keterangan-p3h') {
+                            window.location.href = "{{ route('buat-surat.sk-p3h') }}";
+                        }
                     }
                 },
 
@@ -193,10 +195,22 @@
                     this.selectedLetterData = null;
                 },
 
+                getFormAction() {
+                    if (this.selectedLetterData?.slug === 'surat-pengantar') {
+                        return "{{ route('buat-surat.pengantar') }}";
+                    }
+                    if (this.selectedLetterData?.slug === 'surat-tugas') {
+                        return "{{ route('buat-surat.tugas') }}";
+                    }
+                    return "#";
+                },
+
                 prosesUnduhSurat() {
-                    // Logic kirim data form via AJAX / Form Submit ke Backend Laravel untuk digenerate
-                    alert(`Dokumen Berhasil Dibuat!\n\nSistem sedang mengunduh file surat "${this.selectedLetterData.nama}" dengan parameter keperluan yang Anda masukkan.`);
-                    this.kembaliKeList();
+                    this.$refs.formKeperluan.submit();
+                    
+                    setTimeout(() => {
+                        this.kembaliKeList();
+                    }, 500);
                 }
             }
         }
