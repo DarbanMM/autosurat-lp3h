@@ -131,15 +131,30 @@
     </style>
 </head>
 <body>
-    <div class="a4-page">
+@php
+    $logoUinPath = resource_path('views/letters/Logo/Logo UIN Suka.png');
+    $logoUin = file_exists($logoUinPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoUinPath)) : '';
+@endphp
 
-        <div class="kop-surat">
+<div class="a4-page">
+
+<table style="width: 100%; border: none; margin-bottom: 0px; padding: 0;">
+    <tr>
+        <td style="width: 15%; text-align: left; vertical-align: middle;">
+            @if($logoUin) <img src="{{ $logoUin }}" style="max-height: 80px; max-width: 100%;"> @endif
+        </td>
+        <td style="width: 70%; text-align: center; vertical-align: middle;" class="kop-surat">
             <h4>KEMENTERIAN AGAMA REPUBLIK INDONESIA</h4>
             <h3>HALAL CENTER</h3>
             <h4>UIN SUNAN KALIJAGA YOGYAKARTA</h4>
             <p class="address">Jl. Marsda Adisucipto, Daerah Istimewa Yogyakarta 55281</p>
             <p class="contact">Email: halalcenter@uin-suka.ac.id | Telp: (0274) 512474 | Website: halalcenter.uin-suka.ac.id</p>
-        </div>
+        </td>
+        <td style="width: 15%; text-align: right; vertical-align: middle;">
+            <!-- Kosong agar teks tetap di tengah -->
+        </td>
+    </tr>
+</table>
 
         <div class="line-separator">
             <hr class="line-thin">
