@@ -73,41 +73,6 @@
                 </table>
             </div>
             
-            <!-- Pagination Section -->
-            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex flex-col sm:flex-row items-center justify-end gap-5 text-sm text-gray-600">
-                <div class="font-medium">
-                    Jumlah Data (<span x-text="pagination.total"></span> Data)
-                </div>
-
-                <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-lg shadow-sm px-2 py-1">
-                    <select x-model="limit" class="bg-transparent text-gray-700 text-sm font-medium focus:ring-0 outline-none cursor-pointer py-1">
-                        <option value="10">10 baris</option>
-                        <option value="100">100 baris</option>
-                        <option value="1000">1000 baris</option>
-                    </select>
-                </div>
-
-                <div class="flex items-center gap-3">
-                    <button @click="changePage(pagination.current_page - 1)" :disabled="pagination.current_page <= 1" class="p-1.5 rounded-lg border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 hover:text-brand disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                    </button>
-                    
-                    <span class="font-medium flex items-center gap-2">
-                        Page 
-                        <input type="number" 
-                               x-model.lazy="pagination.current_page" 
-                               @change="changePage(pagination.current_page)"
-                               class="bg-gray-800 text-white px-2 py-1 rounded shadow-inner text-sm font-bold w-14 text-center focus:ring-2 focus:ring-brand outline-none appearance-none" 
-                               min="1" 
-                               :max="pagination.last_page">
-                        of <span x-text="pagination.last_page"></span>
-                    </span>
-                    
-                    <button @click="changePage(pagination.current_page + 1)" :disabled="pagination.current_page >= pagination.last_page" class="p-1.5 rounded-lg border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 hover:text-brand disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                    </button>
-                </div>
-            </div>
         </div>
 
         <!-- Form Modal -->
@@ -181,13 +146,6 @@
                 items: [],
                 formatOptions: [],
                 searchQuery: '',
-                limit: 10, // Default to 10 as per request typically, or 100? Using 100 for consistency
-                
-                pagination: {
-                    current_page: 1,
-                    last_page: 1,
-                    total: 0
-                },
 
                 listLoading: false,
                 isModalOpen: false,
@@ -202,13 +160,7 @@
                 },
 
                 init() {
-                    this.limit = 100;
                     this.$watch('searchQuery', () => {
-                        this.pagination.current_page = 1;
-                        this.loadData();
-                    });
-                    this.$watch('limit', () => {
-                        this.pagination.current_page = 1;
                         this.loadData();
                     });
                     
@@ -229,9 +181,7 @@
                     this.listLoading = true;
                     try {
                         const params = new URLSearchParams({
-                            search: this.searchQuery,
-                            limit: this.limit,
-                            page: this.pagination.current_page
+                            search: this.searchQuery
                         });
                         const response = await fetch(`{{ route('daftar-surat.data') }}?${params.toString()}`, {
                             headers: this.headers()
@@ -239,7 +189,6 @@
                         if (!response.ok) throw new Error('Gagal memuat data');
                         const result = await response.json();
                         this.items = result.data || [];
-                        this.pagination = result.pagination || this.pagination;
                     } catch (error) {
                         console.error(error);
                         alert('Error: ' + error.message);
@@ -259,15 +208,6 @@
                     } catch (error) {
                         console.error(error);
                     }
-                },
-
-                changePage(page) {
-                    page = parseInt(page);
-                    if (isNaN(page) || page < 1) page = 1;
-                    if (page > this.pagination.last_page) page = this.pagination.last_page;
-                    
-                    this.pagination.current_page = page;
-                    this.loadData();
                 },
 
                 openModal(mode, item = null) {

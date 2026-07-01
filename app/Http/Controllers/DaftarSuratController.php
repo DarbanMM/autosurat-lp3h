@@ -23,18 +23,12 @@ class DaftarSuratController extends Controller
             });
         }
 
-        $perPage = $request->input('limit', 100);
-        $paginator = $query->paginate($perPage);
+        $data = $query->get();
 
         return response()->json([
             'success' => true,
-            'data' => $paginator->items(),
-            'pagination' => [
-                'current_page' => $paginator->currentPage(),
-                'last_page' => $paginator->lastPage(),
-                'per_page' => $paginator->perPage(),
-                'total' => $paginator->total(),
-            ],
+            'data' => $data,
+            'total' => $data->count()
         ]);
     }
 

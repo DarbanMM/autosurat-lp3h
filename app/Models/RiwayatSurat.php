@@ -10,7 +10,7 @@ class RiwayatSurat extends Model
     
     protected $primaryKey = 'id_riwayat';
 
-    public $timestamps = false; // We only have created_at, handled manually or via cast if needed. But wait, the migration has created_at nullable. Let me check the migration again.
+    public $timestamps = false;
 
     protected $fillable = [
         'tgl_dibuat',

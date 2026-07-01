@@ -137,7 +137,7 @@
                         <input type="number" 
                                x-model.lazy="pagination.current_page" 
                                @change="changePage(pagination.current_page)"
-                               class="bg-gray-800 text-white px-2 py-1 rounded shadow-inner text-sm font-bold w-14 text-center focus:ring-2 focus:ring-brand outline-none appearance-none" 
+                               class="bg-white border border-gray-200 text-gray-900 px-2 py-1 rounded shadow-sm text-sm font-bold w-14 text-center hover:border-brand focus:border-brand focus:ring-1 focus:ring-brand outline-none transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                min="1" 
                                :max="pagination.last_page">
                         of <span x-text="pagination.last_page"></span>

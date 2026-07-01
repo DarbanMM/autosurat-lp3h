@@ -22,29 +22,29 @@
 
             <div class="p-6 sm:p-8 space-y-6" x-show="!isLoading">
                 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-sm">
+                <div class="grid grid-cols-1 sm:grid-cols-[max-content_auto_1fr] gap-y-4 gap-x-2 sm:gap-x-4 text-sm items-center sm:items-start">
                     
-                    <div class="font-bold text-gray-600 sm:text-right">NIP</div>
-                    <div class="sm:col-span-2 font-medium text-gray-900 flex items-start gap-2">
-                        <span class="hidden sm:inline">:</span>
+                    <div class="font-bold text-gray-600">NIP</div>
+                    <div class="hidden sm:block font-bold text-gray-600">:</div>
+                    <div class="font-medium text-gray-900">
                         <span x-text="dataAsli.nip || '-'"></span>
                     </div>
 
-                    <div class="font-bold text-gray-600 sm:text-right">Nama</div>
-                    <div class="sm:col-span-2 font-medium text-gray-900 flex items-start gap-2">
-                        <span class="hidden sm:inline">:</span>
+                    <div class="font-bold text-gray-600 mt-2 sm:mt-0">Nama</div>
+                    <div class="hidden sm:block font-bold text-gray-600">:</div>
+                    <div class="font-medium text-gray-900">
                         <span x-text="dataAsli.nama || '-'"></span>
                     </div>
 
-                    <div class="font-bold text-gray-600 sm:text-right">Jabatan</div>
-                    <div class="sm:col-span-2 font-medium text-gray-900 flex items-start gap-2">
-                        <span class="hidden sm:inline">:</span>
+                    <div class="font-bold text-gray-600 mt-2 sm:mt-0">Jabatan</div>
+                    <div class="hidden sm:block font-bold text-gray-600">:</div>
+                    <div class="font-medium text-gray-900">
                         <span x-text="dataAsli.jabatan || '-'"></span>
                     </div>
 
-                    <div class="font-bold text-gray-600 sm:text-right">Tanda Tangan Digital / Barcode</div>
-                    <div class="sm:col-span-2 font-medium text-gray-900 flex items-start gap-2">
-                        <span class="hidden sm:inline">:</span>
+                    <div class="font-bold text-gray-600 mt-2 sm:mt-0">Tanda Tangan Digital / Barcode</div>
+                    <div class="hidden sm:block font-bold text-gray-600">:</div>
+                    <div class="font-medium text-gray-900">
                         <div class="flex items-center gap-2">
                             <template x-if="dataAsli.barcode_ttd">
                                 <div class="flex items-center gap-2">

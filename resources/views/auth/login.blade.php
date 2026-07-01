@@ -122,7 +122,7 @@
                 <div class="pt-2">
                     <button type="submit" 
                         class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white primary-bg hover:bg-[#550060] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#670075] transition-all duration-200 transform hover:-translate-y-0.5 shadow-lg shadow-[#670075]/30">
-                        Masuk
+                        Log in
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ml-2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                         </svg>
