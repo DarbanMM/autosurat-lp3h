@@ -38,13 +38,13 @@
                             <p class="text-xs text-gray-400 mt-2" x-text="surat.inputManual ? 'Memerlukan isian data di halaman keperluan.' : 'Instan (Dapat langsung diunduh tanpa isian manual).'"></p>
                         </div>
                         
-                        <div class="px-6 py-4 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
-                            <button @click="pilihSurat(surat)" class="text-sm font-bold text-[#670075] hover:text-[#4f0059] flex items-center gap-2 transition-colors">
+                        <button @click="pilihSurat(surat)" class="w-full text-left px-6 py-4 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between hover:bg-[#670075] transition-colors focus:outline-none group/footer">
+                            <div class="text-sm font-bold text-[#670075] group-hover/footer:text-white flex items-center gap-2 transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                 Buat
-                            </button>
-                            <svg class="w-4 h-4 text-gray-300 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                        </div>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-400 group-hover/footer:text-white transform group-hover/footer:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
                         
                     </div>
                 </template>
